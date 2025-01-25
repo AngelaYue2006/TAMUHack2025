@@ -40,11 +40,11 @@ loader.load(
 // scene.add(floor);
 
 // Load parking model and add multiple trees to the map
-let lot;
-const lot = new GLTFLoader();
-const lot = 30; // Number of trees to place
+const lotLoader = new GLTFLoader();
+let lotModel;
 
-lot.load(
+
+lotLoader.load(
   '/public/parking_lot.glb',  // Update path as needed
   (gltf) => {
     lotModel = gltf.scene;
