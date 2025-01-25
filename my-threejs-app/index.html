@@ -94,17 +94,32 @@
       transform: scale(1.05);
     }
 
+    #map-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      display: none;  /* Initially hide map container */
+    }
+
     canvas {
-      display: block;
+      display: block; /* Removes any extra margins/padding */
     }
   </style>
 </head>
 <body>
   <div id="welcome-screen">
     <h1>Welcome TOYOTA User!</h1>
-    <p>Test drive your dream cars in this interactive shopping map!</p> <!-- New text -->
+    <p>Test drive your dream cars in this interactive shopping map!</p>
     <button id="start-button">Start Driving</button>
   </div>
+
+  <div id="map-container">
+    <!-- 3D map will be rendered here -->
+  </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
