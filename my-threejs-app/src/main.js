@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Scene, Camera, Renderer
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('map-container').appendChild(renderer.domElement);  // Append renderer to the map container
@@ -45,17 +45,17 @@ const treeLoader = new GLTFLoader();
 const treeCount = 30; // Number of trees to place
 
 treeLoader.load(
-  '/public/tree.glb',  // Update path as needed
+  '/public/parking_lot.glb',  // Update path as needed
   (gltf) => {
     treeModel = gltf.scene;
-    treeModel.scale.set(0.5, 0.5, 0.5);  // Scale the tree if needed
+    treeModel.scale.set(1, 1, 1);  // Scale the tree if needed
 
     // Randomly place trees on the map
     for (let i = 0; i < treeCount; i++) {
       const treeClone = treeModel.clone();
       const randomX = Math.random() * 400 - 200; // Random position between -200 and 200
       const randomZ = Math.random() * 400 - 200; // Random position between -200 and 200
-      treeClone.position.set(randomX, 0.5, randomZ);  // Position the tree
+      treeClone.position.set(1, 1, -4);  // Position the tree
       scene.add(treeClone);
     }
   },
@@ -76,16 +76,16 @@ function animate() {
   // Check for car control based on key presses
   if (carModel) {
     if (keyState["ArrowUp"]) {
-      carModel.position.z -= 0.1; // Move car forward
+      carModel.position.z -= 1; // Move car forward
     }
     if (keyState["ArrowDown"]) {
-      carModel.position.z += 0.1; // Move car backward
+      carModel.position.z += 1; // Move car backward
     }
     if (keyState["ArrowLeft"]) {
-      carModel.position.x -= 0.1; // Move car left
+      carModel.position.x -= 1; // Move car left
     }
     if (keyState["ArrowRight"]) {
-      carModel.position.x += 0.1; // Move car right
+      carModel.position.x += 1; // Move car right
     }
   }
 
