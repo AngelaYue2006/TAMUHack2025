@@ -32,32 +32,45 @@ loader.load(
   }
 );
 
-// Create the floor (white plane)
-const floorGeometry = new THREE.PlaneGeometry(500, 500); 
-const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-floor.rotation.x = Math.PI / 2; // Rotate the floor to make it horizontal
-scene.add(floor);
+// // Create the floor (white plane)
+// const floorGeometry = new THREE.PlaneGeometry(500, 500); 
+// const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+// const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+// floor.rotation.x = Math.PI / 2; // Rotate the floor to make it horizontal
+// scene.add(floor);
 
-// Load tree model and add multiple trees to the map
-let treeModel;
-const treeLoader = new GLTFLoader();
-const treeCount = 30; // Number of trees to place
+// Load parking model and add multiple trees to the map
+let lot;
+const lot = new GLTFLoader();
+const lot = 30; // Number of trees to place
 
-treeLoader.load(
+lot.load(
   '/public/parking_lot.glb',  // Update path as needed
   (gltf) => {
-    treeModel = gltf.scene;
-    treeModel.scale.set(1, 1, 1);  // Scale the tree if needed
+    lotModel = gltf.scene;
+    lotModel.scale.set(1, 1, 1);  // Scale the tree if needed
 
-    // Randomly place trees on the map
-    for (let i = 0; i < treeCount; i++) {
-      const treeClone = treeModel.clone();
-      const randomX = Math.random() * 400 - 200; // Random position between -200 and 200
-      const randomZ = Math.random() * 400 - 200; // Random position between -200 and 200
-      treeClone.position.set(1, 1, -4);  // Position the tree
-      scene.add(treeClone);
-    }
+    // place lots
+      const lotClone = lotModel.clone();
+      lotClone.position.set(1, -1, 1);  // Position the tree
+      scene.add(lotClone);
+
+      const lotClone2 = lotModel.clone();
+      lotClone2.position.set(100, -1, 50);  // Position the tree
+      scene.add(lotClone2);
+
+      const lotClone3 = lotModel.clone();
+      lotClone3.position.set(50, -1, 100);  // Position the tree
+      scene.add(lotClone3);
+
+      const lotClone4 = lotModel.clone();
+      lotClone4.position.set(75, -1, 75);  // Position the tree
+      scene.add(lotClone4);
+
+      const lotClone5 = lotModel.clone();
+      lotClone5.position.set(0, -1, 100);  // Position the tree
+      scene.add(lotClone5);
+    
   },
   undefined,
   (error) => {
