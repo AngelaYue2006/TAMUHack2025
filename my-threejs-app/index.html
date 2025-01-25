@@ -9,6 +9,19 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Avenir';
+      src: url('/fonts/AvenirLTStd-Black.otf') format('opentype');
+      font-weight: 400;
+    }
+
+    @font-face {
+      font-family: 'Avenir';
+      src: url('/fonts/avenir-black.otf') format('opentype');
+      font-weight: 700;
     }
 
     #welcome-screen {
@@ -20,30 +33,65 @@
       background: black;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; /* Vertically center the content */
+      align-items: flex-start; /* Align content to the left */
+      padding: 20px 20px 20px 100px; /* Add more padding on the left */
       z-index: 10;
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     #welcome-screen h1 {
+      font-family: 'Avenir', sans-serif;
+      font-weight: 400;
       color: white;
       font-size: 4rem;
-      text-align: center;
-      margin-bottom: 20px;
+      margin-left: 0;   /* Align text to the left */
+      margin-top: 0;    /* Adjust this value to your liking */
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+    }
+
+    #welcome-screen p {
+      font-family: 'Avenir', sans-serif;
+      font-weight: 200;
+      color: white;
+      font-size: 1.5rem; /* Smaller text size */
+      margin-left: 0;
+      margin-top: -30px;  /* Adds some space between the h1 and the p text */
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+      animation-delay: 1s; /* Delay for fade-in after h1 */
     }
 
     #welcome-screen button {
+      background-color: #EB0A1E; /* Button color  THIS IS THE TOYOTA COLOR*/
+      color: white;
       font-size: 1.5rem;
-      padding: 10px 20px;
-      background-color: white;
+      padding: 15px 30px;        /* Button size */
       border: none;
-      border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-left: 0;            /* Align to the left */
+      margin-top: 20px;          /* Space between button and text */
+      font-family: 'Avenir', sans-serif;
+      text-align: left;          /* Align text inside button */
+      transition: background-color 0.3s;
     }
 
     #welcome-screen button:hover {
       background-color: #ddd;
+      color: black;
+      border-color: #333;
+      transform: scale(1.05);
     }
 
     canvas {
@@ -53,7 +101,8 @@
 </head>
 <body>
   <div id="welcome-screen">
-    <h1>Welcome Toyota User!</h1>
+    <h1>Welcome TOYOTA User!</h1>
+    <p>Test drive your dream cars in this interactive shopping map!</p> <!-- New text -->
     <button id="start-button">Start Driving</button>
   </div>
   <script type="module" src="/src/main.js"></script>
