@@ -126,7 +126,7 @@ let targetSpeed = 0; // Desired speed based on user input
 // Keyboard Input
 const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false };
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
+    if (e.key === 'w') keys.w = true;
     if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
