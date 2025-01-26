@@ -248,44 +248,90 @@ scene.traverse((object) => {
   }
 });
 
-// Car Switch Box Display
-const carSwitchDisplays = [(25.4, 0, 87.3)];
-const carSwitchCollisions = [];
-
-// Create the box geometry
-const boxGeometry = new THREE.BoxGeometry(2.5, 0.5, 4.5);
-const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
-const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
-detector.name = 'car switch';
-detector.position.set(25.4, 0, 87.3);
-scene.add(detector);
-
-const boxGeometry1 = new THREE.BoxGeometry(2.5, 0.5, 4.5);
-const edgesGeometry1 = new THREE.EdgesGeometry(boxGeometry1);
-const detector1 = new THREE.LineSegments(edgesGeometry1, outlineMaterial);
-detector1.name = 'car switch';
-detector1.position.set(25.4, 0, 87.3);
-scene.add(detector1);
-
-function checkCollisions() {
-  updateCarBoundingBox(); // Update the car's bounding box
-
-  for (const barrierBox of barrierBoundingBoxes) {
-      if (carBoundingBox.intersectsBox(barrierBox)) {
-          // Handle collision with the specific barrier
-          handleCollision(barrierBox);
-          break; // Exit loop after first collision
-      }
-  }
-}
-
 function handleCollision(barrierBox) {
   carSpeed = 0;
 }
 
 const carBoxHelper = new THREE.Box3Helper(carBoundingBox, 0xff0000);
 scene.add(carBoxHelper);
+
+// Car Switch Box Display
+const carSwitchDisplays = [
+  { x: 23.1, y: 0, z: 87.3 },
+  { x: 30, y: 0, z: 90 }, // Additional display box
+  // Add more coordinates as needed
+];
+
+const carSwitchCollisions = [
+  { x: 23, y: 0, z: 87.4, name: "corolla2" },
+  { x: 30, y: 0, z: 90, name: "civic" }, // Additional collision box
+  // Add more coordinates and names as needed
+];
+
+const collisionBoxes = []; // Array to store collision boxes
+
+// Material for the outlines
+const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+// Loop through carSwitchDisplays and create display boxes
+carSwitchDisplays.forEach((position) => {
+  const boxGeometry = new THREE.BoxGeometry(2.5, 0.5, 4.5);
+  const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+  const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
+  detector.name = 'Car Switch Display';
+  detector.position.set(position.x, position.y, position.z);
+  scene.add(detector);
+});
+
+carSwitchCollisions.forEach((position) => {
+  const boxGeometry = new THREE.BoxGeometry(4, 2, 8);
+  const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+  const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
+  detector.name = 'Car Switch Display';
+  detector.position.set(position.x, position.y, position.z);
+  scene.add(detector);
+  collisionBoxes.push(detector);
+});
+
+const boxGeometry1 = new THREE.BoxGeometry(4, 2, 8);
+const edgesGeometry1 = new THREE.EdgesGeometry(boxGeometry1);
+const detector1 = new THREE.LineSegments(edgesGeometry1, outlineMaterial);
+
+// Get the HTML element
+const infoMessage = document.getElementById('info-popup');
+// Variable to track if the car is colliding with the detector
+let isCollidingWithDetector = false;
+
+function checkCollisions() {
+    updateCarBoundingBox(); // Update the car's bounding box
+
+    for (const barrierBox of barrierBoundingBoxes) {
+      if (carBoundingBox.intersectsBox(barrierBox)) {
+          // Handle collision with the specific barrier
+          handleCollision(barrierBox);
+          break; // Exit loop after first collision
+      }
+    }
+
+    let isColliding = false; // Track if the car is colliding with any box
+
+  // Loop through all collision boxes
+  collisionBoxes.forEach((detector) => {
+    const detectorBox = new THREE.Box3().setFromObject(detector);
+    if (carBoundingBox.intersectsBox(detectorBox)) {
+      isColliding = true;
+    }
+  });
+
+  // Show/hide the info message based on collision
+  if (isColliding) {
+    infoMessage.style.display = 'block';
+    isCollidingWithDetector = true;
+  } else {
+    infoMessage.style.display = 'none';
+    isCollidingWithDetector = false;
+  }
+}
 
 // Update function
 function update() {
