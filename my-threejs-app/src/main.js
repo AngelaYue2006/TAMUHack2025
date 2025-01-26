@@ -576,7 +576,7 @@ function update() {
 
       // Handle jump when Space is pressed
       if (keys.Space && canJump) {
-          jumpVelocity = 0.15; // Initial jump speed
+          jumpVelocity = 0.5; // Initial jump speed
           canJump = false; // Prevent multiple jumps
       }
 
