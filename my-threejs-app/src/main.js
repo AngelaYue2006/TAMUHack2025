@@ -188,12 +188,19 @@ function update() {
 
       // Gradually adjust carSpeed towards targetSpeed
       if (carSpeed < targetSpeed) {
+        if (keys.s){
+          carSpeed += acceleration * 2.5; // Accelerate
+          carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
+        else {
           carSpeed += acceleration; // Accelerate
           carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
       } else if (carSpeed > targetSpeed) {
           carSpeed -= deceleration; // Decelerate
           carSpeed = Math.max(carSpeed, targetSpeed); // Clamp to targetSpeed
       }
+
 
       // Apply movement to the car
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
