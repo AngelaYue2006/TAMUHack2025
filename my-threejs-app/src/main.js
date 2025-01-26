@@ -72,6 +72,54 @@ loadParkingLots(scene);
 const loader = new GLTFLoader();
 let car, wheels = [];
 
+// Drop-in effect variables
+const initialDropHeight = 3; // Height from which the car drops
+let isDropping = true; // Whether the car is currently dropping
+
+// Initial spawn position
+const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 85);
+
+// Gravity and jump variables
+const gravity = 0.005; // Gravity pull
+let jumpVelocity = 0; // Initial vertical speed
+let canJump = true; // Allow jump when grounded
+
+// Drop-in effect
+function dropIn() {
+    if (car) {
+        car.position.copy(initialCarPosition); // Set initial height
+        isDropping = true; // Enable dropping
+    }
+}
+
+// Apply gravity
+function applyGravity() {
+    if (car) {
+        // Apply gravity
+        car.position.y += jumpVelocity; // Apply vertical movement
+        jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
+
+        // Reset when car lands
+        if (car.position.y <= 1) { // Ground level
+            car.position.y = 1; // Snap to ground
+            jumpVelocity = 0; // Stop vertical movement
+            canJump = true; // Allow jumping again
+            isDropping = false; // Stop dropping
+        }
+    }
+}
+
+// Reset car to initial position
+function resetCar() {
+    if (car) {
+        car.position.copy(initialCarPosition); // Reset position
+        car.rotation.y = 0; // Reset rotation
+        carSpeed = 0; // Reset speed
+        targetSpeed = 0; // Reset target speed
+        dropIn(); // Trigger drop-in effect
+    }
+}
+
 // Adjust the path to the GLB file
 loader.load('/mirai2.glb', (gltf) => {
     car = gltf.scene;
@@ -99,11 +147,10 @@ loader.load('/mirai2.glb', (gltf) => {
         }
     });
 
-    // Position the car
-    car.position.set(20, .07, 98.5);
+    // Position the car and trigger drop-in effect
+    car.position.copy(initialCarPosition);
     car.scale.set(0.3, 0.3, 0.3);
-    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
-
+    dropIn(); // Trigger drop-in effect
 }, undefined, (error) => {
     console.error('Error loading car model:', error);
 });
@@ -126,13 +173,14 @@ const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
 // Keyboard Input
-const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false };
+const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false, r: false };
 window.addEventListener('keydown', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
     if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
     if (e.key === ' ') keys.Space = true;
+    if (e.key === 'r' || e.key === 'R') keys.r = true; // Add "R" key
 });
 window.addEventListener('keyup', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
@@ -140,33 +188,8 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
     if (e.key === ' ') keys.Space = false;
+    if (e.key === 'r' || e.key === 'R') keys.r = false; // Add "R" key
 });
-
-
-let canJump = true; // Allow jump when grounded
-let jumpVelocity = 0; // Initial vertical speed
-const gravity = 0.01; // Gravity pull
-
-if (car) {
-    // Existing speed and turning logic...
-
-    // Handle jump when Space is pressed
-    if (keys.Space && canJump) {
-        jumpVelocity = 0.3; // Initial jump speed
-        canJump = false; // Prevent multiple jumps
-    }
-
-    // Apply gravity
-    car.position.y += jumpVelocity; // Apply vertical movement
-    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
-
-    // Reset when car lands
-    if (car.position.y <= 0.5) { // Ground level
-        car.position.y = 0.5; // Snap to ground
-        jumpVelocity = 0; // Stop vertical movement
-        canJump = true; // Allow jumping again
-    }
-}
 
 // Define the boundary for the top-down view
 const topDownBoundary = {
@@ -179,6 +202,17 @@ const topDownBoundary = {
 // Update function
 function update() {
   if (car) {
+      // Handle reset when "R" is pressed
+      if (keys.r) {
+          resetCar();
+          keys.r = false; // Prevent continuous reset
+      }
+
+      // Apply gravity and drop-in effect
+      if (isDropping) {
+          applyGravity();
+      }
+
       // Determine target speed based on user input
       if (keys.w) {
           targetSpeed = -maxSpeed; // Accelerate forward
@@ -224,23 +258,14 @@ function update() {
         }
       }
 
-
-      //Adding Jump Function
+      // Handle jump when Space is pressed
       if (keys.Space && canJump) {
-        jumpVelocity = 0.15; // Initial jump speed
-        canJump = false; // Prevent multiple jumps
-    }
+          jumpVelocity = 0.15; // Initial jump speed
+          canJump = false; // Prevent multiple jumps
+      }
 
-    // Apply gravity
-    car.position.y += jumpVelocity; // Apply vertical movement
-    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
-
-    // Reset when car lands
-    if (car.position.y <= 0.5) { // Ground level
-        car.position.y = 0.5; // Snap to ground
-        jumpVelocity = 0; // Stop vertical movement
-        canJump = true; // Allow jumping again
-    }
+      // Apply gravity
+      applyGravity();
 
       // Apply rotation to the car
       car.rotation.y += turnAngle;
@@ -295,7 +320,6 @@ function update() {
       updateSpeedometer(Math.abs(carSpeed)); // Use absolute value for speedometer
   }
 }
-
 
 // Update Speedometer
 function updateSpeedometer(speed) {
