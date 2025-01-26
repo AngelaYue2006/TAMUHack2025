@@ -168,10 +168,10 @@ if (car) {
 
 // Define the boundary for the top-down view
 const topDownBoundary = {
-  x1: 60, // Left boundary
-  z1: -100, // Front boundary
-  x2: 100,  // Right boundary
-  z2: 100,  // Back boundary
+  x1: 5, // Left boundary
+  z1: 82, // Front boundary
+  x2: 90,  // Right boundary
+  z2: 115,  // Back boundary
 };
 
 // Update function
@@ -267,7 +267,7 @@ function update() {
           car.position.z < topDownBoundary.z2
       ) {
           // Top-down view
-          camera.position.set(car.position.x, 50, car.position.z); // Move camera above the car
+          camera.position.set(car.position.x, 10, car.position.z); // Move camera above the car
           camera.lookAt(car.position); // Look straight down
       } else {
           // Default follow behavior
