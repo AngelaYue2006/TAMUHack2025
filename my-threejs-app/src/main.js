@@ -63,7 +63,7 @@ let isDropping = true; // Whether the car is currently dropping
 
 // Initial spawn position
 const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 98.5);
-const testDriveCarPosition = new THREE.Vector3(76,initialDropHeight + 5, 61);
+const testDriveCarPosition = new THREE.Vector3(34.6,initialDropHeight - 3, 79.5);
 
 // Gravity and jump variables
 const gravity = 0.005; // Gravity pull
@@ -413,7 +413,7 @@ function reloadCarModel(modelName) {
 
     // Position the car and trigger drop-in effect
     car.position.copy(testDriveCarPosition);
-    car.rotation.y = Math.PI / 2 + 0.7; // Rotate the car 90 degrees (in radians)
+    car.rotation.y = Math.PI / 2 + 0.65; // Rotate the car 90 degrees (in radians)
     car.scale.set(0.25, 0.25, 0.25);
     carSpeed = 0;
     dropIn(testDriveCarPosition); // Trigger drop-in effect
@@ -664,7 +664,7 @@ function updateSpeedometer(speed) {
   const speedText = document.getElementById('speed-text');
 
   // Calculate needle rotation (0 to 180 degrees)
-  const rotation = (speed / maxSpeed) * 180 - 90; // Map speed to -90deg to 90deg
+  const rotation = (speed / (maxSpeed + 10)) * 180 - 90; // Map speed to -90deg to 90deg
   needle.style.transform = `rotate(${rotation}deg)`;
 
   // Update speed text
