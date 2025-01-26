@@ -106,6 +106,7 @@ function resetCar() {
 }
 
 let activeCarName = null; // Track the name of the active collision box
+let selectedCarName = null;
 
 // Adjust the path to the GLB file
 loader.load('/mirai2.glb', (gltf) => {
@@ -438,6 +439,7 @@ window.addEventListener('keydown', (e) => {
     } else if (e.key === 'u' && activeCarName) {
       // Reload the car model
       reloadCarModel(activeCarName);
+      selectedCarName = activeCarName;
     }
   }
 });
@@ -572,12 +574,13 @@ function update() {
         car.scale.set(0.25, 0.25, 0.25);
         camera.up.set(0, 1, 0); // Reset camera's up direction for normal view
         camera.lookAt(car.position);
-        const activeCarData = vehicleData.find(vehicle => vehicle[0] === activeCarName);
+        // Find the vehicle data for the active car
+        const activeCarData = vehicleData.find(vehicle => vehicle[0] === selectedCarName);
         if (!activeCarData) {
           maxSpeed = 20;
         }
         else {
-          maxSpeed = activeCarData[4]; // maxSpeed
+          maxSpeed = activeCarData[4];
         }
     }
     
