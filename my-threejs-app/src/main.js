@@ -63,6 +63,7 @@ let isDropping = true; // Whether the car is currently dropping
 
 // Initial spawn position
 const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 98.5);
+const testDriveCarPosition = new THREE.Vector3(76,initialDropHeight + 5, 61);
 
 // Gravity and jump variables
 const gravity = 0.005; // Gravity pull
@@ -70,9 +71,9 @@ let jumpVelocity = 0; // Initial vertical speed
 let canJump = true; // Allow jump when grounded
 
 // Drop-in effect
-function dropIn() {
+function dropIn(carPos) {
     if (car) {
-        car.position.copy(initialCarPosition); // Set initial height
+        car.position.copy(carPos); // Set initial height
         isDropping = true; // Enable dropping
     }
 }
@@ -101,7 +102,7 @@ function resetCar() {
         car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
         carSpeed = 0; // Reset speed
         targetSpeed = 0; // Reset target speed
-        dropIn(); // Trigger drop-in effect
+        dropIn(initialCarPosition); // Trigger drop-in effect
     }
 }
 
@@ -139,7 +140,7 @@ loader.load('/mirai2.glb', (gltf) => {
     car.position.copy(initialCarPosition);
     car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
     car.scale.set(0.25, 0.25, 0.25);
-    dropIn(); // Trigger drop-in effect
+    dropIn(initialCarPosition); // Trigger drop-in effect
 }, undefined, (error) => {
     console.error('Error loading car model:', error);
 });
@@ -411,11 +412,11 @@ function reloadCarModel(modelName) {
     });
 
     // Position the car and trigger drop-in effect
-    car.position.copy(initialCarPosition);
-    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
+    car.position.copy(testDriveCarPosition);
+    car.rotation.y = Math.PI / 2 + 0.7; // Rotate the car 90 degrees (in radians)
     car.scale.set(0.25, 0.25, 0.25);
     carSpeed = 0;
-    dropIn(); // Trigger drop-in effect
+    dropIn(testDriveCarPosition); // Trigger drop-in effect
   }, undefined, (error) => {
     console.error(`Error loading ${modelName} model:`, error);
   });
