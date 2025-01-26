@@ -73,7 +73,7 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Adjust the path to the GLB file
-loader.load('/toyota_chaser.glb', (gltf) => {
+loader.load('/bluecar.glb', (gltf) => {
     car = gltf.scene;
     scene.add(car);
 
@@ -100,15 +100,14 @@ loader.load('/toyota_chaser.glb', (gltf) => {
     });
 
     // Position the car
-    car.position.set(0, 0, 0);
-    car.scale.set(1, 1, 1);
+    car.position.set(20, .5, 85);
+    car.scale.set(0.3, 0.3, 0.3);
 }, undefined, (error) => {
     console.error('Error loading car model:', error);
 });
 
 // Camera Follow Setup
-const cameraOffset = new THREE.Vector3(0, 1.5, -4); // Adjusted for higher and further back view
-const cameraLag = 0.1; // Lag for smoother camera movement
+const cameraOffset = new THREE.Vector3(0, 1, -2); // Adjusted for higher and further back view
 
 // Movement Variables
 const moveSpeed = 0.1;
@@ -172,26 +171,23 @@ function update() {
 
       // Steer wheels for turning (front wheels only)
       wheels.forEach((wheel) => {
-          if (wheel.name.includes('front')) { // Check your model naming
-              if (keys.a) {
-                  wheel.rotation.y = Math.PI / 8; // Turn left
-              } else if (keys.d) {
-                  wheel.rotation.y = -Math.PI / 8; // Turn right
-              } else {
-                  wheel.rotation.y = 0; // Reset steering
-              }
+        if (wheel.name.includes('front')) { // Check your model naming
+          if (keys.a) {
+            wheel.rotation.y = Math.PI / 8; // Turn left (consistent value)
+          } else if (keys.d) {
+            wheel.rotation.y = -Math.PI / 8; // Turn right (consistent value)
+          } else {
+            wheel.rotation.y = 0; // Reset steering
           }
+        }
       });
 
-      // Camera Follow
+      // Camera Follow (No Lag)
       const targetCameraPosition = car.position.clone().add(
           cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
       );
-      camera.position.lerp(targetCameraPosition, cameraLag);
-      camera.lookAt(car.position);
-
-      // Update Speedometer
-      updateSpeedometer(carSpeed);
+      camera.position.copy(targetCameraPosition); // Directly set camera position
+      camera.lookAt(car.position); // Make camera look at the car
   }
 }
 
