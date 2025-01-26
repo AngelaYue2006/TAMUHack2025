@@ -25,7 +25,11 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: black;
+      overflow: hidden; /* Prevent scrolling */
+      background-image: url('/images/car_driving.gif'); /* Path to your GIF */
+      background-position: center;
+      background-size: cover;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: center; /* Vertically center the content */
@@ -377,7 +381,7 @@
 <body>
   <div id="welcome-screen">
     <h1>Welcome TOYOTA User!</h1>
-    <p>Test drive your dream cars in this interactive shopping map!</p> <!-- New text -->
+    <p>Test drive your future cars in this interactive shopping map!</p> <!-- New text -->
     <button id="start-button">Start Driving</button>
   </div>
   
