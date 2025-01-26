@@ -130,13 +130,41 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
+    if (e.key === ' ') keys.Space = true;
 });
 window.addEventListener('keyup', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
     if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = false;
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
+    if (e.key === ' ') keys.Space = false;
 });
+
+
+let canJump = true; // Allow jump when grounded
+let jumpVelocity = 0; // Initial vertical speed
+const gravity = 0.01; // Gravity pull
+
+if (car) {
+    // Existing speed and turning logic...
+
+    // Handle jump when Space is pressed
+    if (keys.Space && canJump) {
+        jumpVelocity = 0.3; // Initial jump speed
+        canJump = false; // Prevent multiple jumps
+    }
+
+    // Apply gravity
+    car.position.y += jumpVelocity; // Apply vertical movement
+    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
+
+    // Reset when car lands
+    if (car.position.y <= 0.5) { // Ground level
+        car.position.y = 0.5; // Snap to ground
+        jumpVelocity = 0; // Stop vertical movement
+        canJump = true; // Allow jumping again
+    }
+}
 
 
 function update() {
@@ -146,7 +174,8 @@ function update() {
           targetSpeed = -maxSpeed; // Accelerate forward
       } else if (keys.s) {
           targetSpeed = maxSpeed / 2; // Reverse at half speed
-      } else {
+      }
+          else {
           targetSpeed = 0; // Decelerate to stop
       }
 
@@ -184,6 +213,24 @@ function update() {
           if (keys.d) turnAngle -= turnSpeed;
         }
       }
+
+
+      //Adding Jump Function
+      if (keys.Space && canJump) {
+        jumpVelocity = 0.15; // Initial jump speed
+        canJump = false; // Prevent multiple jumps
+    }
+
+    // Apply gravity
+    car.position.y += jumpVelocity; // Apply vertical movement
+    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
+
+    // Reset when car lands
+    if (car.position.y <= 0.5) { // Ground level
+        car.position.y = 0.5; // Snap to ground
+        jumpVelocity = 0; // Stop vertical movement
+        canJump = true; // Allow jumping again
+    }
 
       // Apply rotation to the car
       car.rotation.y += turnAngle;
