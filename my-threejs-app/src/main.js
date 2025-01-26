@@ -153,8 +153,14 @@ function update() {
 
       // Only allow turning if the car is moving
       if (moveDirection.z !== 0) {
+        if (keys.w) {
           if (keys.a) turnAngle += turnSpeed;
           if (keys.d) turnAngle -= turnSpeed;
+        }
+        else if (keys.s) {
+          if (keys.a) turnAngle -= turnSpeed;
+          if (keys.d) turnAngle += turnSpeed;
+        }
       }
 
       // Apply rotation to the car
