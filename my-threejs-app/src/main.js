@@ -100,8 +100,10 @@ loader.load('/mirai2.glb', (gltf) => {
     });
 
     // Position the car
-    car.position.set(20, .5, 85);
+    car.position.set(20, .07, 98.5);
     car.scale.set(0.3, 0.3, 0.3);
+    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
+
 }, undefined, (error) => {
     console.error('Error loading car model:', error);
 });
@@ -118,7 +120,7 @@ let turnAngle = 0;
 
 // Speed Variables
 let carSpeed = 0; // Speed in mph
-const maxSpeed = 20; // Maximum speed for the speedometer
+let maxSpeed = 20; // Maximum speed for the speedometer
 const acceleration = 0.02; // Rate of acceleration
 const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
@@ -266,24 +268,28 @@ function update() {
           }
       });
 
-      // Camera behavior based on the car's position
       if (
-          car.position.x > topDownBoundary.x1 &&
-          car.position.x < topDownBoundary.x2 &&
-          car.position.z > topDownBoundary.z1 &&
-          car.position.z < topDownBoundary.z2
-      ) {
-          // Top-down view
-          camera.position.set(car.position.x, 10, car.position.z); // Move camera above the car
-          camera.lookAt(car.position); // Look straight down
-      } else {
-          // Default follow behavior
-          const targetCameraPosition = car.position.clone().add(
-              cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
-          );
-          camera.position.lerp(targetCameraPosition, cameraLag);
-          camera.lookAt(car.position);
-      }
+        car.position.x > topDownBoundary.x1 &&
+        car.position.x < topDownBoundary.x2 &&
+        car.position.z > topDownBoundary.z1 &&
+        car.position.z < topDownBoundary.z2
+    ) {
+        // Top-down view with a 90-degree rotated angle
+        camera.position.set(car.position.x, 15, car.position.z); // Move camera above the car
+        camera.up.set(1, 0, 0); // Rotate the camera's up direction to change the angle
+        camera.lookAt(car.position); // Look straight at the car
+        maxSpeed = 5;
+    } else {
+        // Default follow behavior
+        const targetCameraPosition = car.position.clone().add(
+            cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
+        );
+        camera.position.lerp(targetCameraPosition, cameraLag);
+        camera.up.set(0, 1, 0); // Reset camera's up direction for normal view
+        camera.lookAt(car.position);
+        maxSpeed = 20;
+    }
+    
 
       // Update Speedometer
       updateSpeedometer(Math.abs(carSpeed)); // Use absolute value for speedometer
