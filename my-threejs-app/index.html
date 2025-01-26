@@ -18,12 +18,6 @@
       font-weight: 400;
     }
 
-    @font-face {
-      font-family: 'Avenir';
-      src: url('/fonts/avenir-black.otf') format('opentype');
-      font-weight: 700;
-    }
-
     
     #welcome-screen {
       position: fixed;
@@ -177,9 +171,8 @@
     left: 50%;
     transform: translateX(-50%);
     color: white;
-    font-size: 24px;
+    font-size: 20px;
     display: none; /* Hidden by default */
-    font-family: 'Avenir', sans-serif; /* Use the Avenir font */
     text-align: center; /* Center-align the text */
     background: rgba(0, 0, 0, 0.7); /* Add a semi-transparent background */
     padding: 10px; /* Add padding for better spacing */
@@ -237,10 +230,10 @@
 <!-- Popup for car information -->
 <div id="car-info-popup" style="display: none; position: fixed; top: 50%; left: 50%; width: 50%; height: 50%; transform: translate(-50%, -50%); background: rgb(0, 0, 0); padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(197, 25, 25, 0.2); z-index: 1000; opacity: 0; animation: fadeIn 1s forwards;">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-    <h3 style="margin: 0; color: white; text-align: center; width: 100%;">Car Information</h3> <!-- Center the title -->
+    <h3 style="margin: 0; color: white; text-align: center; width: 100%;">Car Information</h3>
     <button id="close-popup" style="background: none; border: none; font-size: 20px; cursor: pointer; color: white;">&times;</button>
   </div>
-  <p id="car-info-content" style="margin: 0; color: white; text-align: center;">This is the car information.</p> <!-- Center the content -->
+  <p id="car-info-content" style="margin: 0; color: white; text-align: center;">Loading car details...</p> <!-- Center the content -->
 </div>
 
 <!-- Overlay for the popup -->

@@ -420,22 +420,96 @@ function reloadCarModel(modelName) {
     console.error(`Error loading ${modelName} model:`, error);
   });
 }
-
 // Get the popup and overlay elements
 const carInfoPopup = document.getElementById('car-info-popup');
 const overlay = document.getElementById('overlay');
 const carInfoContent = document.getElementById('car-info-content');
 const closePopupButton = document.getElementById('close-popup');
 
+// Variable to store car data (will be loaded from CSV)
+let carData = [];
+
+// Function to fetch and parse the CSV
+function loadCarData() {
+  Papa.parse('/public/vehicle_data.csv', {
+    download: true,
+    header: true,
+    complete: function(results) {
+      carData = results.data;
+    },
+    error: function(error) {
+      console.error("Error parsing CSV file: ", error);
+    }
+  });
+}
+
+// Function to populate the popup with car information
+function populateCarInfo(car) {
+  // Example of displaying car information in the popup
+  carInfoContent.innerHTML = `
+    <strong>Model:</strong> ${car.Model} <br>
+    <strong>Price:</strong> $${car.Price} <br>
+    <strong>Max Speed:</strong> ${car.maxSpeed} mph <br>
+    <strong>Horsepower:</strong> ${car.Horsepower} hp <br>
+    <strong>Fuel Economy:</strong> ${car['Fuel Economy (MPG)']} MPG <br>
+    <strong>Description:</strong> ${car.Description} <br>
+  `;
+}
+
+
 // Handle keyboard input
 window.addEventListener('keydown', (e) => {
   if (isCollidingWithDetector) {
     if (e.key === 'i') {
-      // Set the car information content
-      carInfoContent.textContent = `This is the information for the car.`; // Replace with dynamic content if needed
-      // Show the popup and overlay
-      carInfoPopup.style.display = 'block';
-      overlay.style.display = 'block';
+      // Ensure activeCarName is defined before using it
+      if (!activeCarName) {
+        console.log('No active car selected');
+        return;
+      }
+
+      // Find car data based on activeCarName
+      const carRow = vehicleData.find(row => row[0] === activeCarName); // The first column contains the file name
+
+      if (carRow) {
+        console.log('Car found:', carRow);
+
+        // Extract the car data from the row (e.g., carRow[0] = File Name, carRow[1] = Type, etc.)
+        const carInfo = {
+          "FileName": carRow[0],
+          "Type": carRow[1],
+          "Price": carRow[2],
+          "Model": carRow[3],
+          "maxSpeed": carRow[4],
+          "turnSpeed": carRow[5],
+          "acceleration": carRow[6],
+          "deceleration": carRow[7],
+          "Fuel": carRow[8],
+          "Seats": carRow[9],
+          "Fuel Economy (MPG)": carRow[10],
+          "Fuel Tank": carRow[11],
+          "Range": carRow[12],
+          "Horsepower": carRow[13],
+          "Steering diameter (ft)": carRow[14],
+          "Safety Features": carRow[15],
+          "Description": carRow[16]
+        };
+
+        // Populate the popup with car info
+        carInfoContent.innerHTML = `
+          <strong>Model:</strong> ${carInfo.Model} <br>
+          <strong>Price:</strong> ${carInfo.Price} <br>
+          <strong>Max Speed:</strong> ${carInfo.maxSpeed} mph <br>
+          <strong>Horsepower:</strong> ${carInfo.Horsepower} hp <br>
+          <strong>Fuel Economy:</strong> ${carInfo['Fuel Economy (MPG)']} MPG <br>
+          <strong>Description:</strong> ${carInfo.Description} <br>
+        `;
+
+        // Show the popup and overlay
+        carInfoPopup.style.display = 'block';
+        overlay.style.display = 'block';
+      } else {
+        console.log('Car not found in data');
+      }
     } else if (e.key === 'u' && activeCarName) {
       // Reload the car model
       reloadCarModel(activeCarName);
@@ -455,6 +529,7 @@ overlay.addEventListener('click', () => {
   carInfoPopup.style.display = 'none';
   overlay.style.display = 'none';
 });
+
 
 // Update function
 function update() {
