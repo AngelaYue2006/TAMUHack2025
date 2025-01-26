@@ -106,6 +106,7 @@ function resetCar() {
 }
 
 let activeCarName = null; // Track the name of the active collision box
+let selectedCarName = null;
 
 // Adjust the path to the GLB file
 loader.load('/mirai2.glb', (gltf) => {
@@ -148,12 +149,12 @@ const cameraOffset = new THREE.Vector3(0, 1, -2); // Adjusted for higher and fur
 const cameraLag = 0.1; // Lag for smoother camera movement
 
 // Car Movement and Speed Variables
-const turnSpeed = 0.015;
+let turnSpeed = 0.015;
 let turnAngle = 0;
 let carSpeed = 0; // Speed in mph
 let maxSpeed = 20; // Maximum speed for the speedometer
-const acceleration = 0.02; // Rate of acceleration
-const deceleration = 0.03; // Rate of deceleration
+let acceleration = 0.02; // Rate of acceleration
+let deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
 //Creating variable for the coordinate tracker
@@ -367,6 +368,20 @@ function reloadCarModel(modelName) {
     scene.remove(car);
   }
 
+  // Find the vehicle data for the active car
+  const activeCarData = vehicleData.find(vehicle => vehicle[0] === modelName);
+
+  if (!activeCarData) {
+    console.error(`No data found for car: ${modelName}`);
+    return;
+  }
+
+  // Update movement and speed variables
+  maxSpeed = activeCarData[4]; // maxSpeed
+  turnSpeed = activeCarData[5]; // turnSpeed
+  acceleration = activeCarData[6]; // acceleration
+  deceleration = activeCarData[7]; // deceleration
+
   // Load the new car model
   loader.load(`/${modelName}.glb`, (gltf) => {
     car = gltf.scene;
@@ -498,6 +513,7 @@ window.addEventListener('keydown', (e) => {
     } else if (e.key === 'u' && activeCarName) {
       // Reload the car model
       reloadCarModel(activeCarName);
+      selectedCarName = activeCarName;
     }
   }
 });
@@ -633,7 +649,14 @@ function update() {
         car.scale.set(0.25, 0.25, 0.25);
         camera.up.set(0, 1, 0); // Reset camera's up direction for normal view
         camera.lookAt(car.position);
-        maxSpeed = 20;
+        // Find the vehicle data for the active car
+        const activeCarData = vehicleData.find(vehicle => vehicle[0] === selectedCarName);
+        if (!activeCarData) {
+          maxSpeed = 20;
+        }
+        else {
+          maxSpeed = activeCarData[4];
+        }
     }
     
 
