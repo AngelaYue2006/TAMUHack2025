@@ -138,6 +138,17 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
 });
 
+let startTime = Date.now();
+
+function getElapsedTime() {
+  return Date.now() - startTime; // Elapsed time in milliseconds
+}
+
+// Update Speedometer
+
+let steeringAngle = 0; // Current steering angle
+const maxSteeringAngle = 0.05; // Maximum steering angle in radians
+const steeringIncrement = 0.0001; // Rate at which steering angle increases
 
 function update() {
   if (car) {
@@ -169,27 +180,21 @@ function update() {
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
       car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
-      // Only allow turning if the car is moving
-      if (carSpeed !== 0) {
-        if (keys.w) {
-          if (keys.a) turnAngle += turnSpeed;
-          if (keys.d) turnAngle -= turnSpeed;
-        }
-        else if (keys.s && carSpeed >= 0) {
-          if (keys.a) turnAngle -= turnSpeed;
-          if (keys.d) turnAngle += turnSpeed;
-        }
-        else {
-          if (keys.a) turnAngle += turnSpeed;
-          if (keys.d) turnAngle -= turnSpeed;
-        }
+      // Update steering angle based on key input
+      if (carSpeed != 0){
+      if (keys.a && !keys.d) {
+          steeringAngle += steeringIncrement;
+          steeringAngle = Math.min(steeringAngle, maxSteeringAngle); // Clamp to maxSteeringAngle
+      } else if (keys.d && !keys.a) {
+          steeringAngle -= steeringIncrement;
+          steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
+      } else {
+          steeringAngle = 0; // Reset steering angle if both keys are pressed or none are pressed
       }
+    }
 
       // Apply rotation to the car
-      car.rotation.y += turnAngle;
-
-      // Reset turn angle
-      turnAngle = 0;
+      car.rotation.y += steeringAngle;
 
       // Rotate wheels for forward/backward movement
       wheels.forEach((wheel) => {
@@ -201,13 +206,7 @@ function update() {
       // Steer wheels for turning (front wheels only)
       wheels.forEach((wheel) => {
         if (wheel.name.includes('front')) { // Check your model naming
-          if (keys.a) {
-            wheel.rotation.y = 0.1; // Turn left (consistent value)
-          } else if (keys.d) {
-            wheel.rotation.y = -0.1; // Turn right (consistent value)
-          } else {
-            wheel.rotation.y = 0; // Reset steering
-          }
+          wheel.rotation.y = steeringAngle; // Apply steering angle to front wheels
         }
       });
 
@@ -223,7 +222,20 @@ function update() {
   }
 }
 
-// Update Speedometer
+// Update keyboard event listeners to reset steering angle when keys are released
+window.addEventListener('keyup', (e) => {
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
+    if (e.key === 'a' || e.key === 'ArrowLeft') {
+        keys.a = false;
+        steeringAngle = 0; // Reset steering angle when 'a' is released
+    }
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
+    if (e.key === 'd' || e.key === 'ArrowRight') {
+        keys.d = false;
+        steeringAngle = 0; // Reset steering angle when 'd' is released
+    }
+});
+
 function updateSpeedometer(speed) {
   const needle = document.getElementById('needle');
   const speedText = document.getElementById('speed-text');
