@@ -231,26 +231,42 @@ function updateCarBoundingBox() {
     }
 }
 
+// Physical collision barrier
 const barrier = new THREE.Mesh(
   new THREE.BoxGeometry(20, 20, 20),
   new THREE.MeshStandardMaterial({ color: 0xff0000 })
 );
-barrier.name = 'BARRIER'; // Assign a name
+barrier.name = 'barrier'; // Assign a name
 barrier.position.set(20, 5, 60);
 scene.add(barrier);
 
-// Function to add bounding boxes for barriers/fences
-function addBarrierBoundingBox(object) {
-    const boundingBox = new THREE.Box3().setFromObject(object);
-    barrierBoundingBoxes.push(boundingBox);
-}
-
 // Example: Add bounding boxes for barriers/fences
 scene.traverse((object) => {
-  if (object.isMesh && (object.name.includes('BARRIER') || object.name.includes('CUBE'))) {
-      addBarrierBoundingBox(object);
+  if (object.isMesh && (object.name.includes('barrier'))) {
+    const boundingBox = new THREE.Box3().setFromObject(object);
+    barrierBoundingBoxes.push(boundingBox);
   }
 });
+
+// Car Switch Box Display
+const carSwitchDisplays = [(25.4, 0, 87.3)];
+const carSwitchCollisions = [];
+
+// Create the box geometry
+const boxGeometry = new THREE.BoxGeometry(2.5, 0.5, 4.5);
+const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
+detector.name = 'car switch';
+detector.position.set(25.4, 0, 87.3);
+scene.add(detector);
+
+const boxGeometry1 = new THREE.BoxGeometry(2.5, 0.5, 4.5);
+const edgesGeometry1 = new THREE.EdgesGeometry(boxGeometry1);
+const detector1 = new THREE.LineSegments(edgesGeometry1, outlineMaterial);
+detector1.name = 'car switch';
+detector1.position.set(25.4, 0, 87.3);
+scene.add(detector1);
 
 function checkCollisions() {
   updateCarBoundingBox(); // Update the car's bounding box
@@ -266,32 +282,10 @@ function checkCollisions() {
 
 function handleCollision(barrierBox) {
   carSpeed = 0;
-  const velocity = forwardDirection.clone().multiplyScalar(carSpeed);
-  // Calculate the dot product between velocity and normal
-  const dot = velocity.dot(normal);
-  // Only reflect the velocity if the car is moving toward the barrier
-  if (dot < 0) {
-      // Calculate the reflection vector
-      const reflectedVelocity = reflectVector(velocity, normal);
-      // Blend the reflected velocity with the original velocity based on the collision angle
-      const blendFactor = Math.abs(dot); // How "head-on" the collision is (0 = glancing, 1 = head-on)
-      const blendedVelocity = new THREE.Vector3()
-          .lerpVectors(velocity, reflectedVelocity, blendFactor * 0.5); // Adjust blend strength
-      const newForwardDirection = blendedVelocity.normalize();
-      // Move the car slightly away from the barrier to prevent sticking
-      const offset = newForwardDirection.clone().multiplyScalar(0.2);
-      car.position.add(offset);
-  }
-  
 }
 
 const carBoxHelper = new THREE.Box3Helper(carBoundingBox, 0xff0000);
 scene.add(carBoxHelper);
-
-barrierBoundingBoxes.forEach((box) => {
-    const boxHelper = new THREE.Box3Helper(box, 0x00ff00);
-    scene.add(boxHelper);
-});
 
 // Update function
 function update() {
