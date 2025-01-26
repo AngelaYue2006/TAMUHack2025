@@ -266,6 +266,22 @@ function checkCollisions() {
 
 function handleCollision(barrierBox) {
   carSpeed = 0;
+  const velocity = forwardDirection.clone().multiplyScalar(carSpeed);
+  // Calculate the dot product between velocity and normal
+  const dot = velocity.dot(normal);
+  // Only reflect the velocity if the car is moving toward the barrier
+  if (dot < 0) {
+      // Calculate the reflection vector
+      const reflectedVelocity = reflectVector(velocity, normal);
+      // Blend the reflected velocity with the original velocity based on the collision angle
+      const blendFactor = Math.abs(dot); // How "head-on" the collision is (0 = glancing, 1 = head-on)
+      const blendedVelocity = new THREE.Vector3()
+          .lerpVectors(velocity, reflectedVelocity, blendFactor * 0.5); // Adjust blend strength
+      const newForwardDirection = blendedVelocity.normalize();
+      // Move the car slightly away from the barrier to prevent sticking
+      const offset = newForwardDirection.clone().multiplyScalar(0.2);
+      car.position.add(offset);
+  }
   
 }
 
