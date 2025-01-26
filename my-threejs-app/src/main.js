@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { loadParkingLots, loadTrees } from './map.js';
+import { loadParkingLots } from './map.js';
 
 // Scene, Camera, Renderer
 const scene = new THREE.Scene();
