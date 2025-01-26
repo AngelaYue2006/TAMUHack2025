@@ -118,41 +118,97 @@ let turnAngle = 0;
 
 // Speed Variables
 let carSpeed = 0; // Speed in mph
-const maxSpeed = 15; // Maximum speed for the speedometer
-const acceleration = 0.05; // Rate of acceleration
+const maxSpeed = 20; // Maximum speed for the speedometer
+const acceleration = 0.02; // Rate of acceleration
 const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
 // Keyboard Input
-const keys = { w: false, a: false, s: false, d: false };
+const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false };
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'w') keys.w = true;
-    if (e.key === 'a') keys.a = true;
-    if (e.key === 's') keys.s = true;
-    if (e.key === 'd') keys.d = true;
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
+    if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
+    if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
+    if (e.key === ' ') keys.Space = true;
 });
 window.addEventListener('keyup', (e) => {
-    if (e.key === 'w') keys.w = false;
-    if (e.key === 'a') keys.a = false;
-    if (e.key === 's') keys.s = false;
-    if (e.key === 'd') keys.d = false;
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
+    if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = false;
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
+    if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
+    if (e.key === ' ') keys.Space = false;
 });
+
+let startTime = Date.now();
+
+function getElapsedTime() {
+  return Date.now() - startTime; // Elapsed time in milliseconds
+}
+
+// Update Speedometer
+
+let steeringAngle = 0; // Current steering angle
+let maxSteeringAngle = 0.04; // Maximum steering angle in radians
+let steeringIncrement = 0.0005; // Rate at which steering angle increases
+
+let canJump = true; // Allow jump when grounded
+let jumpVelocity = 0; // Initial vertical speed
+const gravity = 0.01; // Gravity pull
+
+if (car) {
+    // Existing speed and turning logic...
+
+    // Handle jump when Space is pressed
+    if (keys.Space && canJump) {
+        jumpVelocity = 0.3; // Initial jump speed
+        canJump = false; // Prevent multiple jumps
+    }
+
+    // Apply gravity
+    car.position.y += jumpVelocity; // Apply vertical movement
+    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
+
+    // Reset when car lands
+    if (car.position.y <= 0.5) { // Ground level
+        car.position.y = 0.5; // Snap to ground
+        jumpVelocity = 0; // Stop vertical movement
+        canJump = true; // Allow jumping again
+    }
+}
+
 
 function update() {
   if (car) {
       // Determine target speed based on user input
+      if (carSpeed > 25) {
+        maxSteeringAngle = 0.02;
+        steeringIncrement = 0.0000001;
+      }
+      else if (carSpeed <= 25){
+        maxSteeringAngle = 0.04;
+        steeringIncrement = 0.0005;
+      }
+
       if (keys.w) {
           targetSpeed = -maxSpeed; // Accelerate forward
       } else if (keys.s) {
           targetSpeed = maxSpeed / 2; // Reverse at half speed
-      } else {
+      }
+          else {
           targetSpeed = 0; // Decelerate to stop
       }
 
       // Gradually adjust carSpeed towards targetSpeed
       if (carSpeed < targetSpeed) {
+        if (keys.s){
+          carSpeed += acceleration * 2.5; // Accelerate
+          carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
+        else {
           carSpeed += acceleration; // Accelerate
           carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
       } else if (carSpeed > targetSpeed) {
           carSpeed -= deceleration; // Decelerate
           carSpeed = Math.max(carSpeed, targetSpeed); // Clamp to targetSpeed
@@ -162,27 +218,45 @@ function update() {
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
       car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
-      // Only allow turning if the car is moving
-      if (carSpeed !== 0) {
-        if (keys.w) {
-          if (keys.a) turnAngle += turnSpeed;
-          if (keys.d) turnAngle -= turnSpeed;
-        }
-        else if (keys.s && carSpeed >= 0) {
-          if (keys.a) turnAngle -= turnSpeed;
-          if (keys.d) turnAngle += turnSpeed;
-        }
-        else {
-          if (keys.a) turnAngle += turnSpeed;
-          if (keys.d) turnAngle -= turnSpeed;
-        }
+      // Update steering angle based on key input
+      if (!keys.a && !keys.d && Math.abs(steeringAngle < 0.005)){
+        steeringAngle = 0;
       }
+      if (carSpeed != 0){
+      if (keys.a && !keys.d) {
+          steeringAngle += steeringIncrement;
+          steeringAngle = Math.min(steeringAngle, maxSteeringAngle); // Clamp to maxSteeringAngle
+      } else if (keys.d && !keys.a) {
+          steeringAngle -= steeringIncrement;
+          steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
+      } else if (!keys.a && !keys.d && steeringAngle > 0){
+          steeringAngle -= steeringIncrement * 2; // Reset steering angle if both keys are pressed or none are pressed
+      }
+        else if (!keys.a && !keys.d && steeringAngle < 0){
+          steeringAngle += steeringIncrement * 2;
+        }
+    }
+
+
+      //Adding Jump Function
+      if (keys.Space && canJump) {
+        jumpVelocity = 0.15; // Initial jump speed
+        canJump = false; // Prevent multiple jumps
+    }
+
+    // Apply gravity
+    car.position.y += jumpVelocity; // Apply vertical movement
+    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
+
+    // Reset when car lands
+    if (car.position.y <= 0.5) { // Ground level
+        car.position.y = 0.5; // Snap to ground
+        jumpVelocity = 0; // Stop vertical movement
+        canJump = true; // Allow jumping again
+    }
 
       // Apply rotation to the car
-      car.rotation.y += turnAngle;
-
-      // Reset turn angle
-      turnAngle = 0;
+      car.rotation.y += steeringAngle;
 
       // Rotate wheels for forward/backward movement
       wheels.forEach((wheel) => {
@@ -194,13 +268,7 @@ function update() {
       // Steer wheels for turning (front wheels only)
       wheels.forEach((wheel) => {
         if (wheel.name.includes('front')) { // Check your model naming
-          if (keys.a) {
-            wheel.rotation.y = 0.1; // Turn left (consistent value)
-          } else if (keys.d) {
-            wheel.rotation.y = -0.1; // Turn right (consistent value)
-          } else {
-            wheel.rotation.y = 0; // Reset steering
-          }
+          wheel.rotation.y = steeringAngle; // Apply steering angle to front wheels
         }
       });
 
@@ -216,7 +284,20 @@ function update() {
   }
 }
 
-// Update Speedometer
+// Update keyboard event listeners to reset steering angle when keys are released
+window.addEventListener('keyup', (e) => {
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
+    if (e.key === 'a' || e.key === 'ArrowLeft') {
+        keys.a = false;
+        //steeringAngle = 0; // Reset steering angle when 'a' is released
+    }
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
+    if (e.key === 'd' || e.key === 'ArrowRight') {
+        keys.d = false;
+        //steeringAngle = 0; // Reset steering angle when 'd' is released
+    }
+});
+
 function updateSpeedometer(speed) {
   const needle = document.getElementById('needle');
   const speedText = document.getElementById('speed-text');
