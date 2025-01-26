@@ -25,7 +25,6 @@
     }
 
     
-
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -162,7 +161,6 @@
     X: 0, Y: 0
   </div>
   
-  
   <style>
     #coordinate-display {
       position: absolute;
@@ -177,13 +175,6 @@
       display: none; /* Hidden initially */
       z-index: 1000;
     }
-
-    .fade-out {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.8s ease, visibility 0.8s ease;
-}
-
   </style>
 
   <div id="map-container">
@@ -195,11 +186,6 @@
     <div id="speedometer-background"></div>
     <div id="needle"></div>
     <div id="speed-text">0 mph</div>
-  </div>
-
-  <div id="info-popup" style="position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; display: none;">
-    Press [i] for info
-    <div style="font-size: 18px; margin-top: 10px;">Press [u] to select</div>
   </div>
 
   <script type="module" src="/src/main.js"></script>
