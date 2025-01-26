@@ -29,6 +29,9 @@ Future Goals:
 For future iterations of DriveLab, we plan to implement a section for recommended vehicles specific to the user's preferences. Through a quick questionnaire at the beginning of the website, users can find some suggested Toyota cars within the user's price range and have those cars ready to test first. We also would like to add more Toyota models to the car collection, ideally, one day completing their full catalog of cars. Other improvements include better physics implementation with collisions and revised UI for direct comparison tools between individual models, outside of driving performance.
 
 Technology:
-javascript, blender, html, css, databases, html, three.js
+javascript, html, css, blender, databases, three.js
 
 Credits:
+Car model: “Free Low Poly Vehicles Pack - Download Free 3D Model by RgsDev.” Sketchfab.com, sketchfab.com/3d-models/free-low-poly-vehicles-pack-cb7640039e7a40679a53be705ebff50e.Sketchfab. Building model: “Sketchfab.” Sketchfab, 16 Dec. 2022, sketchfab.com/3d-models/set-of-4-low-poly-buildings-491530e7cd1b4d5f83c1d58b538ae2ad. Accessed 26 Jan. 2025.---. 
+Track model: “Sketchfab.” Sketchfab, 6 Mar. 2022, sketchfab.com/3d-models/race-trackkarting-track-based-on-south-garda-32c21042ba144ce9bd2822a88d5b54ec. Accessed 26 Jan. 2025.---. 
+Trees model: “Sketchfab.” Sketchfab, 11 Nov. 2019, sketchfab.com/3d-models/cartoon-trees-6cfabc6732bf40fea7090cb6557ee0d8. Accessed 26 Jan. 2025.
