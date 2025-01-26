@@ -108,6 +108,7 @@ loader.load('/bluecar.glb', (gltf) => {
 
 // Camera Follow Setup
 const cameraOffset = new THREE.Vector3(0, 1, -2); // Adjusted for higher and further back view
+const cameraLag = 0.1; // Lag for smoother camera movement
 
 // Movement Variables
 const moveSpeed = 0.1;
@@ -182,12 +183,15 @@ function update() {
         }
       });
 
-      // Camera Follow (No Lag)
+      // Camera Follow
       const targetCameraPosition = car.position.clone().add(
           cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
       );
-      camera.position.copy(targetCameraPosition); // Directly set camera position
-      camera.lookAt(car.position); // Make camera look at the car
+      camera.position.lerp(targetCameraPosition, cameraLag);
+      camera.lookAt(car.position);
+
+      // Update Speedometer
+      updateSpeedometer(carSpeed);
   }
 }
 
