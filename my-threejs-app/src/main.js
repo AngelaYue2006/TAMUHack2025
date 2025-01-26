@@ -20,7 +20,7 @@ sunLight.position.set(10, 20, 10); // Position the sun
 sunLight.castShadow = true; // Enable shadows
 
 // Adjust shadow camera frustum
-const roadSize = 500; // Size of the road
+const roadSize = 5000; // Size of the road
 sunLight.shadow.camera.left = -roadSize / 2; // Extend left
 sunLight.shadow.camera.right = roadSize / 2; // Extend right
 sunLight.shadow.camera.top = roadSize / 2; // Extend top
@@ -118,7 +118,10 @@ let turnAngle = 0;
 
 // Speed Variables
 let carSpeed = 0; // Speed in mph
-const maxSpeed = 120; // Maximum speed for the speedometer
+const maxSpeed = 15; // Maximum speed for the speedometer
+const acceleration = 0.05; // Rate of acceleration
+const deceleration = 0.03; // Rate of deceleration
+let targetSpeed = 0; // Desired speed based on user input
 
 // Keyboard Input
 const keys = { w: false, a: false, s: false, d: false };
@@ -135,24 +138,32 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 'd') keys.d = false;
 });
 
-// Update Function
 function update() {
   if (car) {
-      // Movement
-      moveDirection.set(0, 0, 0);
-      if (keys.w) moveDirection.z -= moveSpeed;
-      if (keys.s) moveDirection.z += moveSpeed;
+      // Determine target speed based on user input
+      if (keys.w) {
+          targetSpeed = -maxSpeed; // Accelerate forward
+      } else if (keys.s) {
+          targetSpeed = maxSpeed / 2; // Reverse at half speed
+      } else {
+          targetSpeed = 0; // Decelerate to stop
+      }
+
+      // Gradually adjust carSpeed towards targetSpeed
+      if (carSpeed < targetSpeed) {
+          carSpeed += acceleration; // Accelerate
+          carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+      } else if (carSpeed > targetSpeed) {
+          carSpeed -= deceleration; // Decelerate
+          carSpeed = Math.max(carSpeed, targetSpeed); // Clamp to targetSpeed
+      }
 
       // Apply movement to the car
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
-      car.position.add(forwardDirection.multiplyScalar(moveDirection.z));
-
-      // Calculate speed (in mph)
-      carSpeed = Math.abs(moveDirection.z) * 500; // Adjust multiplier for realistic speed
-      carSpeed = Math.min(carSpeed, maxSpeed); // Clamp speed to maxSpeed
+      car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
       // Only allow turning if the car is moving
-      if (moveDirection.z !== 0) {
+      if (carSpeed !== 0) {
         if (keys.w) {
           if (keys.a) turnAngle += turnSpeed;
           if (keys.d) turnAngle -= turnSpeed;
@@ -160,6 +171,10 @@ function update() {
         else if (keys.s) {
           if (keys.a) turnAngle -= turnSpeed;
           if (keys.d) turnAngle += turnSpeed;
+        }
+        else {
+          if (keys.a) turnAngle += turnSpeed;
+          if (keys.d) turnAngle -= turnSpeed;
         }
       }
 
@@ -171,8 +186,8 @@ function update() {
 
       // Rotate wheels for forward/backward movement
       wheels.forEach((wheel) => {
-          if (moveDirection.z !== 0) {
-              wheel.rotation.x -= moveDirection.z * 2; // Adjust multiplier for rolling speed
+          if (carSpeed !== 0) {
+              wheel.rotation.x -= carSpeed * 0.02; // Adjust multiplier for rolling speed
           }
       });
 
@@ -189,7 +204,7 @@ function update() {
         }
       });
 
-      // Camera Follow
+      // Camera Follow (unchanged)
       const targetCameraPosition = car.position.clone().add(
           cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
       );
@@ -197,7 +212,7 @@ function update() {
       camera.lookAt(car.position);
 
       // Update Speedometer
-      updateSpeedometer(carSpeed);
+      updateSpeedometer(Math.abs(carSpeed)); // Use absolute value for speedometer
   }
 }
 
@@ -211,7 +226,7 @@ function updateSpeedometer(speed) {
   needle.style.transform = `rotate(${rotation}deg)`;
 
   // Update speed text
-  speedText.textContent = `${Math.round(speed)} mph`;
+  speedText.textContent = `${Math.round(speed) * 5} mph`;
 }
 
 // Render Loop
