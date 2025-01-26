@@ -73,7 +73,7 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Adjust the path to the GLB file
-loader.load('/tundra2.glb', (gltf) => {
+loader.load('/mirai2.glb', (gltf) => {
     car = gltf.scene;
     scene.add(car);
 
@@ -140,18 +140,6 @@ window.addEventListener('keyup', (e) => {
     if (e.key === ' ') keys.Space = false;
 });
 
-let startTime = Date.now();
-
-function getElapsedTime() {
-  return Date.now() - startTime; // Elapsed time in milliseconds
-}
-
-// Update Speedometer
-
-const steeringDrag = 0.000009;
-let steeringAngle = 0; // Current steering angle
-let maxSteeringAngle = 0.04; // Maximum steering angle in radians
-let steeringIncrement = 0.0005; // Rate at which steering angle increases
 
 let canJump = true; // Allow jump when grounded
 let jumpVelocity = 0; // Initial vertical speed
@@ -190,15 +178,6 @@ const topDownBoundary = {
 function update() {
   if (car) {
       // Determine target speed based on user input
-      if (carSpeed > 25) {
-        maxSteeringAngle = 0.01;
-        steeringIncrement = 0.0008;
-      }
-      else if (carSpeed <= 25){
-        maxSteeringAngle = 0.02;
-        steeringIncrement = 0.0005;
-      }
-
       if (keys.w) {
           targetSpeed = -maxSpeed; // Accelerate forward
       } else if (keys.s) {
@@ -220,24 +199,21 @@ function update() {
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
       car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
-      // Update steering angle based on key input
-      if (!keys.a && !keys.d && Math.abs(steeringAngle < 0.005)){
-        steeringAngle = 0;
-      }
-      if (carSpeed != 0){
-      if (keys.a && !keys.d) {
-          steeringAngle += steeringIncrement - carSpeed * steeringDrag;
-          steeringAngle = Math.min(steeringAngle, maxSteeringAngle); // Clamp to maxSteeringAngle
-      } else if (keys.d && !keys.a) {
-          steeringAngle -= (steeringIncrement - carSpeed * steeringDrag);
-          steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
-      } else if (!keys.a && !keys.d && steeringAngle > 0){
-          steeringAngle -= steeringIncrement * 3; // Reset steering angle if both keys are pressed or none are pressed
-      }
-        else if (!keys.a && !keys.d && steeringAngle < 0){
-          steeringAngle += steeringIncrement * 3;
+      // Only allow turning if the car is moving
+      if (carSpeed !== 0) {
+        if (keys.w) {
+          if (keys.a) turnAngle += turnSpeed;
+          if (keys.d) turnAngle -= turnSpeed;
         }
-    }
+        else if (keys.s && carSpeed >= 0) {
+          if (keys.a) turnAngle -= turnSpeed;
+          if (keys.d) turnAngle += turnSpeed;
+        }
+        else {
+          if (keys.a) turnAngle += turnSpeed;
+          if (keys.d) turnAngle -= turnSpeed;
+        }
+      }
 
 
       //Adding Jump Function
@@ -308,20 +284,7 @@ function update() {
 }
 
 
-// Update keyboard event listeners to reset steering angle when keys are released
-window.addEventListener('keyup', (e) => {
-    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
-    if (e.key === 'a' || e.key === 'ArrowLeft') {
-        keys.a = false;
-        //steeringAngle = 0; // Reset steering angle when 'a' is released
-    }
-    if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
-    if (e.key === 'd' || e.key === 'ArrowRight') {
-        keys.d = false;
-        //steeringAngle = 0; // Reset steering angle when 'd' is released
-    }
-});
-
+// Update Speedometer
 function updateSpeedometer(speed) {
   const needle = document.getElementById('needle');
   const speedText = document.getElementById('speed-text');
