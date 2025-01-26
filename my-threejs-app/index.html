@@ -156,6 +156,7 @@
     <p>Test drive your dream cars in this interactive shopping map!</p> <!-- New text -->
     <button id="start-button">Start Driving</button>
   </div>
+  
 
   <div id="coordinate-display">
     X: 0, Y: 0
@@ -176,6 +177,13 @@
       display: none; /* Hidden initially */
       z-index: 1000;
     }
+
+    .fade-out {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
   </style>
 
   <div id="map-container">
@@ -196,4 +204,6 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
+
 </html>

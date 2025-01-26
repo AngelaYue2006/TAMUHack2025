@@ -492,12 +492,27 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Show Three.js scene when "Start Driving" is clicked
+// // Show Three.js scene when "Start Driving" is clicked
+// const startButton = document.getElementById('start-button');
+// const welcomeScreen = document.getElementById('welcome-screen');
+
+// startButton.addEventListener('click', () => {
+//   welcomeScreen.style.display = 'none'; // Hide welcome screen
+//   renderer.domElement.style.display = 'block'; // Show canvas
+//   animate(); // Start animation
+// });
 const startButton = document.getElementById('start-button');
 const welcomeScreen = document.getElementById('welcome-screen');
 
+// When "Start Driving" is clicked
 startButton.addEventListener('click', () => {
-  welcomeScreen.style.display = 'none'; // Hide welcome screen
-  renderer.domElement.style.display = 'block'; // Show canvas
-  animate(); // Start animation
+  // Add the fade-out class to trigger the animation
+  welcomeScreen.classList.add('fade-out');
+  
+  // Wait for the animation (800ms matches the CSS transition)
+  setTimeout(() => {
+    welcomeScreen.style.display = 'none'; // Hide the welcome screen completely
+    renderer.domElement.style.display = 'block'; // Show the canvas (or Three.js scene)
+    animate(); // Start animation
+  }, 800);
 });
