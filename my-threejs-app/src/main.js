@@ -232,13 +232,14 @@ function updateCarBoundingBox() {
 }
 
 // Physical collision barrier
-const barrier = new THREE.Mesh(
-  new THREE.BoxGeometry(20, 20, 20),
-  new THREE.MeshStandardMaterial({ color: 0xff0000 })
-);
-barrier.name = 'barrier'; // Assign a name
-barrier.position.set(20, 5, 60);
-scene.add(barrier);
+// IF HAVE TIME *******
+// const barrier = new THREE.Mesh(
+//   new THREE.BoxGeometry(20, 20, 20),
+//   new THREE.MeshStandardMaterial({ color: 0xff0000 })
+// );
+// barrier.name = 'barrier'; // Assign a name
+// barrier.position.set(20, 5, 60);
+// scene.add(barrier);
 
 // Example: Add bounding boxes for barriers/fences
 scene.traverse((object) => {
