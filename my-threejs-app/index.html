@@ -96,8 +96,8 @@
     /* Speedometer Styles */
     #speedometer {
       position: absolute;
-      bottom: 20px; /* Distance from the bottom */
-      right: 20px;  /* Distance from the right */
+      bottom: 50px; /* Distance from the bottom */
+      right: 50px;  /* Distance from the right */
       width: 200px;
       height: 100px;
       background: rgba(0, 0, 0, 0.7);
@@ -144,7 +144,7 @@
       /* Style for the info message container */
   #info-message {
     position: absolute;
-    bottom: 10%;
+    bottom: 15%;
     left: 50%;
     transform: translateX(-50%);
     color: white;
@@ -222,7 +222,7 @@
     <div id="speed-text">0 mph</div>
   </div>
 
-  <div id="info-message" style="position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); color: white; font-size: 24px; display: none;">
+  <div id="info-message">
     Press [i] for info
     <div style="font-size: 18px; margin-top: 10px;">Press [u] to select</div>
   </div>
@@ -238,6 +238,9 @@
 
 <!-- Overlay for the popup -->
 <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(50, 50, 50, 0.8); z-index: 999;"></div>
+
+<!-- Speed-limit image -->
+<img id="speed-limit-image" src="/images/speed-limit.png" alt="Speed Limit" style="position: absolute; top: 40px; right: 0px; width: 250px; display: none;">
 
 <style>
   /* Fade-In Animation */

@@ -628,6 +628,9 @@ function update() {
       // Check for collisions
       checkCollisions();
 
+      // Get the speed-limit image element
+      const speedLimitImage = document.getElementById('speed-limit-image');
+
       if (
         car.position.x > topDownBoundary.x1 &&
         car.position.x < topDownBoundary.x2 &&
@@ -640,6 +643,7 @@ function update() {
         camera.up.set(1, 0, 0); // Rotate the camera's up direction to change the angle
         camera.lookAt(car.position); // Look straight at the car
         maxSpeed = 5;
+        speedLimitImage.style.display = 'block';
     } else {
         // Default follow behavior
         const targetCameraPosition = car.position.clone().add(
@@ -657,6 +661,7 @@ function update() {
         else {
           maxSpeed = activeCarData[4];
         }
+        speedLimitImage.style.display = 'none';
     }
     
 
