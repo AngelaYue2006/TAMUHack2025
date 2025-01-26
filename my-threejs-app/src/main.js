@@ -150,7 +150,7 @@ loader.load('/mirai2.glb', (gltf) => {
     // Position the car and trigger drop-in effect
     car.position.copy(initialCarPosition);
     car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
-    car.scale.set(0.3, 0.3, 0.3);
+    car.scale.set(0.25, 0.25, 0.25);
     dropIn(); // Trigger drop-in effect
 }, undefined, (error) => {
     console.error('Error loading car model:', error);
@@ -301,7 +301,8 @@ function update() {
         car.position.z < topDownBoundary.z2
     ) {
         // Top-down view with a 90-degree rotated angle
-        camera.position.set(car.position.x, 15, car.position.z); // Move camera above the car
+        camera.position.set(car.position.x, 15, car.position.z);
+        car.scale.set(0.6,0.6,0.6); // Move camera above the car
         camera.up.set(1, 0, 0); // Rotate the camera's up direction to change the angle
         camera.lookAt(car.position); // Look straight at the car
         maxSpeed = 5;
@@ -311,6 +312,7 @@ function update() {
             cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
         );
         camera.position.lerp(targetCameraPosition, cameraLag);
+        car.scale.set(0.25, 0.25, 0.25);
         camera.up.set(0, 1, 0); // Reset camera's up direction for normal view
         camera.lookAt(car.position);
         maxSpeed = 20;
