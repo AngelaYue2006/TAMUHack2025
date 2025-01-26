@@ -443,18 +443,6 @@ function loadCarData() {
   });
 }
 
-// Function to populate the popup with car information
-function populateCarInfo(car) {
-  // Example of displaying car information in the popup
-  carInfoContent.innerHTML = `
-    <strong>Model:</strong> ${car.Model} <br>
-    <strong>Price:</strong> $${car.Price} <br>
-    <strong>Max Speed:</strong> ${car.maxSpeed} mph <br>
-    <strong>Horsepower:</strong> ${car.Horsepower} hp <br>
-    <strong>Fuel Economy:</strong> ${car['Fuel Economy (MPG)']} MPG <br>
-    <strong>Description:</strong> ${car.Description} <br>
-  `;
-}
 
 
 // Handle keyboard input
@@ -479,11 +467,6 @@ window.addEventListener('keydown', (e) => {
           "Type": carRow[1],
           "Price": carRow[2],
           "Model": carRow[3],
-          "maxSpeed": carRow[4],
-          "turnSpeed": carRow[5],
-          "acceleration": carRow[6],
-          "deceleration": carRow[7],
-          "Fuel": carRow[8],
           "Seats": carRow[9],
           "Fuel Economy (MPG)": carRow[10],
           "Fuel Tank": carRow[11],
@@ -496,12 +479,13 @@ window.addEventListener('keydown', (e) => {
 
         // Populate the popup with car info
         carInfoContent.innerHTML = `
-          <strong>Model:</strong> ${carInfo.Model} <br>
-          <strong>Price:</strong> ${carInfo.Price} <br>
-          <strong>Max Speed:</strong> ${carInfo.maxSpeed} mph <br>
+          <strong style="font-size: 1.5rem;"></strong> <span style="font-size: 3rem; font-weight: bold;">${carInfo.Model}</span> <br>
+          <br> <!-- Add this line for space between model and other info -->
+          <strong></strong> ${carInfo.Price} <br>
+          <strong>Seats:</strong> ${carInfo.Seats} <br>
+
           <strong>Horsepower:</strong> ${carInfo.Horsepower} hp <br>
           <strong>Fuel Economy:</strong> ${carInfo['Fuel Economy (MPG)']} MPG <br>
-          <strong>Description:</strong> ${carInfo.Description} <br>
         `;
 
         // Show the popup and overlay
@@ -696,12 +680,32 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Show Three.js scene when "Start Driving" is clicked
+// Get elements
 const startButton = document.getElementById('start-button');
 const welcomeScreen = document.getElementById('welcome-screen');
+const surveyScreen = document.getElementById('survey-screen');
+const surveyForm = document.getElementById('survey-form');
+const threejsScene = document.getElementById('threejs-scene');
 
+// Show survey screen when "Start Driving" is clicked
 startButton.addEventListener('click', () => {
   welcomeScreen.style.display = 'none'; // Hide welcome screen
-  renderer.domElement.style.display = 'block'; // Show canvas
-  animate(); // Start animation
+  surveyScreen.style.display = 'flex'; // Show survey screen
 });
+
+
+  // Handle survey form submission
+surveyForm.addEventListener('submit', (e) => {
+  e.preventDefault(); // Prevent form submission
+
+  // Add fade-out animation to the survey screen
+  surveyScreen.classList.add('fade-out');
+
+  // Wait for the fade-out animation to finish before hiding the survey screen
+  setTimeout(() => {
+    surveyScreen.style.display = 'none'; // Hide survey screen
+    threejsScene.style.display = 'block'; // Show Three.js scene
+  }, 1500); // The duration of the fade-out animation (1.5s)
+});
+
+
