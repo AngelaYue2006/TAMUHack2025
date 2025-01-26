@@ -146,13 +146,9 @@ loader.load('/mirai2.glb', (gltf) => {
 const cameraOffset = new THREE.Vector3(0, 1, -2); // Adjusted for higher and further back view
 const cameraLag = 0.1; // Lag for smoother camera movement
 
-// Movement Variables
-const moveSpeed = 0.1;
+// Car Movement and Speed Variables
 const turnSpeed = 0.015;
-let moveDirection = new THREE.Vector3();
 let turnAngle = 0;
-
-// Speed Variables
 let carSpeed = 0; // Speed in mph
 let maxSpeed = 20; // Maximum speed for the speedometer
 const acceleration = 0.02; // Rate of acceleration
@@ -250,7 +246,7 @@ const carSwitchDisplays = [
   { x: 37, y: 0, z: 87.3, name: "rav42"  },
   { x: 41.7, y: 0, z: 87.3, name: "highlander2" },
   { x: 50, y: 0, z: 87.3, name: "tacoma2" },
-  { x: 66.2, y: 0, z: 87.3, name: "bz4x" },
+  { x: 66.2, y: 0, z: 87.3, name: "bz4x2" },
   { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
   { x: 27.56, y: 0, z: 110, name: "supra2"},
   { x: 43.76, y: 0, z: 110, name: "4runner2"},
@@ -266,7 +262,7 @@ const carSwitchCollisions = [
   { x: 36.9, y: 0, z: 87.4, name: "rav42" },
   { x: 41.6, y: 0, z: 87.4, name: "highlander2" },
   { x: 49.9, y: 0, z: 87.4, name: "tacoma2" },
-  { x: 66.1, y: 0, z: 87.4, name: "bz4x" },
+  { x: 66.1, y: 0, z: 87.4, name: "bz4x2" },
   { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
   { x: 27.56, y: 0, z: 110, name: "supra2"},
   { x: 43.76, y: 0, z: 110, name: "4runner2"},
