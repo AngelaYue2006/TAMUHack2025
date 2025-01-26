@@ -146,13 +146,9 @@ loader.load('/mirai2.glb', (gltf) => {
 const cameraOffset = new THREE.Vector3(0, 1, -2); // Adjusted for higher and further back view
 const cameraLag = 0.1; // Lag for smoother camera movement
 
-// Movement Variables
-const moveSpeed = 0.1;
+// Car Movement and Speed Variables
 const turnSpeed = 0.015;
-let moveDirection = new THREE.Vector3();
 let turnAngle = 0;
-
-// Speed Variables
 let carSpeed = 0; // Speed in mph
 let maxSpeed = 20; // Maximum speed for the speedometer
 const acceleration = 0.02; // Rate of acceleration
