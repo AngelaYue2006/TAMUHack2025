@@ -165,9 +165,6 @@ let isCoordinateDisplayVisible = false;
 // Reference the coordinate display div
 const coordinateDisplay = document.getElementById('coordinate-display');
 
-// Initialize compass angle
-let compassAngle = 0;
-
 // Keyboard Input
 const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false, r: false };
 window.addEventListener('keydown', (e) => {
@@ -180,10 +177,7 @@ window.addEventListener('keydown', (e) => {
     if (e.key === '1') { //Checking to toggle the coordinates
       isCoordinateDisplayVisible = !isCoordinateDisplayVisible;
       coordinateDisplay.style.display = isCoordinateDisplayVisible ? 'block' : 'none';
-    }
-    if (e.key === '2') {
-      toggleCompass();
-    }
+  }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -506,26 +500,7 @@ function update() {
           if (keys.a) turnAngle += turnSpeed;
           if (keys.d) turnAngle -= turnSpeed;
         }
-
-        
-        // Calculate compass angle (convert radians to degrees)
-        let compassAngle = THREE.MathUtils.radToDeg(car.rotation.y);
-
-        // Adjust for the car's initial rotation (90 degrees offset)
-        compassAngle -= 90; // Subtract 90 degrees to align the compass
-
-        // Invert the angle to fix East/West being backwards
-        compassAngle *= -1;
-
-        // Normalize the angle to a range of 0–360 degrees
-        compassAngle = (compassAngle + 360) % 360;
-
-        // Update the compass needle
-        updateCompass(compassAngle);
-
-
       }
-
 
       // Handle jump when Space is pressed
       if (keys.Space && canJump) {
@@ -626,27 +601,12 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// // Show Three.js scene when "Start Driving" is clicked
-// const startButton = document.getElementById('start-button');
-// const welcomeScreen = document.getElementById('welcome-screen');
-
-// startButton.addEventListener('click', () => {
-//   welcomeScreen.style.display = 'none'; // Hide welcome screen
-//   renderer.domElement.style.display = 'block'; // Show canvas
-//   animate(); // Start animation
-// });
+// Show Three.js scene when "Start Driving" is clicked
 const startButton = document.getElementById('start-button');
 const welcomeScreen = document.getElementById('welcome-screen');
 
-// When "Start Driving" is clicked
 startButton.addEventListener('click', () => {
-  // Add the fade-out class to trigger the animation
-  welcomeScreen.classList.add('fade-out');
-  
-  // Wait for the animation (800ms matches the CSS transition)
-  setTimeout(() => {
-    welcomeScreen.style.display = 'none'; // Hide the welcome screen completely
-    renderer.domElement.style.display = 'block'; // Show the canvas (or Three.js scene)
-    animate(); // Start animation
-  }, 800);
+  welcomeScreen.style.display = 'none'; // Hide welcome screen
+  renderer.domElement.style.display = 'block'; // Show canvas
+  animate(); // Start animation
 });
