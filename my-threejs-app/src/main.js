@@ -214,8 +214,8 @@ const topDownBoundary = {
 // Update function to display coordinates
 function updateCoordinates() {
   if (isCoordinateDisplayVisible && car) {
-      const { x, y } = car.position;
-      coordinateDisplay.textContent = `X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}`;
+      const { x, z } = car.position;
+      coordinateDisplay.textContent = `X: ${z.toFixed(2)}, Y: ${x.toFixed(2)}`;
   }
 }
 
