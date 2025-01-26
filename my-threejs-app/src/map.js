@@ -9,15 +9,15 @@ export function loadParkingLots(scene) {
     '/public/parking_lot.glb',  // Update path as needed
     (gltf) => {
       const lotModel = gltf.scene;
-      lotModel.scale.set(1, 1, 1);  // Scale the lot if needed
+      lotModel.scale.set(4,4, 4);  // Scale the lot if needed
 
       // Place multiple parking lots
       const positions = [
-        { x: 1, y: 0, z: 1 },
-        { x: 100, y: 0, z: 50 },
-        { x: 50, y: 0, z: 100 },
-        { x: 75, y: 0, z: 75 },
-        { x: 0, y: 0, z: 100 },
+        { x: 1, y: 0, z: 1 }
+        // { x: 100, y: 0, z: 50 },
+        // { x: 50, y: 0, z: 100 },
+        // { x: 75, y: 0, z: 75 },
+        // { x: 0, y: 0, z: 100 },
       ];
 
       positions.forEach(pos => {
