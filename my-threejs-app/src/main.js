@@ -65,7 +65,7 @@ let isDropping = true; // Whether the car is currently dropping
 const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 98.5);
 
 // Gravity and jump variables
-const gravity = 0.0005; // Gravity pull
+const gravity = 0.005; // Gravity pull
 let jumpVelocity = 0; // Initial vertical speed
 let canJump = true; // Allow jump when grounded
 
