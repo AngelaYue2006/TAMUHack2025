@@ -58,14 +58,14 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Drop-in effect variables
-const initialDropHeight = 3; // Height from which the car drops
+const initialDropHeight = 6; // Height from which the car drops
 let isDropping = true; // Whether the car is currently dropping
 
 // Initial spawn position
 const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 98.5);
 
 // Gravity and jump variables
-const gravity = 0.005; // Gravity pull
+const gravity = 0.0005; // Gravity pull
 let jumpVelocity = 0; // Initial vertical speed
 let canJump = true; // Allow jump when grounded
 
@@ -622,7 +622,7 @@ function update() {
         car.position.z < topDownBoundary.z2
     ) {
         // Top-down view with a 90-degree rotated angle
-        camera.position.set(car.position.x, 15, car.position.z);
+        camera.position.set(car.position.x-7, 10, car.position.z);
         car.scale.set(0.6,0.6,0.6); // Move camera above the car
         camera.up.set(1, 0, 0); // Rotate the camera's up direction to change the angle
         camera.lookAt(car.position); // Look straight at the car
