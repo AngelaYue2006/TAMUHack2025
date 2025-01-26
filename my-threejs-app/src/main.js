@@ -73,7 +73,7 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Adjust the path to the GLB file
-loader.load('/tacoma2.glb', (gltf) => {
+loader.load('/tundra2.glb', (gltf) => {
     car = gltf.scene;
     scene.add(car);
 
@@ -177,38 +177,30 @@ if (car) {
     }
 }
 
+// Define the boundary for the top-down view
+const topDownBoundary = {
+  x1: 60, // Left boundary
+  z1: -100, // Front boundary
+  x2: 100,  // Right boundary
+  z2: 100,  // Back boundary
+};
 
+// Update function
 function update() {
   if (car) {
       // Determine target speed based on user input
-      if (carSpeed > 25) {
-        maxSteeringAngle = 0.02;
-        steeringIncrement = 0.0000001;
-      }
-      else if (carSpeed <= 25){
-        maxSteeringAngle = 0.04;
-        steeringIncrement = 0.0005;
-      }
-
       if (keys.w) {
           targetSpeed = -maxSpeed; // Accelerate forward
       } else if (keys.s) {
           targetSpeed = maxSpeed / 2; // Reverse at half speed
-      }
-          else {
+      } else {
           targetSpeed = 0; // Decelerate to stop
       }
 
       // Gradually adjust carSpeed towards targetSpeed
       if (carSpeed < targetSpeed) {
-        if (keys.s){
-          carSpeed += acceleration * 2.5; // Accelerate
-          carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
-        }
-        else {
           carSpeed += acceleration; // Accelerate
           carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
-        }
       } else if (carSpeed > targetSpeed) {
           carSpeed -= deceleration; // Decelerate
           carSpeed = Math.max(carSpeed, targetSpeed); // Clamp to targetSpeed
@@ -218,45 +210,25 @@ function update() {
       const forwardDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(car.quaternion);
       car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
-      // Update steering angle based on key input
-      if (!keys.a && !keys.d && Math.abs(steeringAngle < 0.005)){
-        steeringAngle = 0;
+      // Only allow turning if the car is moving
+      if (carSpeed !== 0) {
+          if (keys.w) {
+              if (keys.a) turnAngle += turnSpeed;
+              if (keys.d) turnAngle -= turnSpeed;
+          } else if (keys.s && carSpeed >= 0) {
+              if (keys.a) turnAngle -= turnSpeed;
+              if (keys.d) turnAngle += turnSpeed;
+          } else {
+              if (keys.a) turnAngle += turnSpeed;
+              if (keys.d) turnAngle -= turnSpeed;
+          }
       }
-      if (carSpeed != 0){
-      if (keys.a && !keys.d) {
-          steeringAngle += steeringIncrement;
-          steeringAngle = Math.min(steeringAngle, maxSteeringAngle); // Clamp to maxSteeringAngle
-      } else if (keys.d && !keys.a) {
-          steeringAngle -= steeringIncrement;
-          steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
-      } else if (!keys.a && !keys.d && steeringAngle > 0){
-          steeringAngle -= steeringIncrement * 2; // Reset steering angle if both keys are pressed or none are pressed
-      }
-        else if (!keys.a && !keys.d && steeringAngle < 0){
-          steeringAngle += steeringIncrement * 2;
-        }
-    }
-
-
-      //Adding Jump Function
-      if (keys.Space && canJump) {
-        jumpVelocity = 0.15; // Initial jump speed
-        canJump = false; // Prevent multiple jumps
-    }
-
-    // Apply gravity
-    car.position.y += jumpVelocity; // Apply vertical movement
-    jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
-
-    // Reset when car lands
-    if (car.position.y <= 0.5) { // Ground level
-        car.position.y = 0.5; // Snap to ground
-        jumpVelocity = 0; // Stop vertical movement
-        canJump = true; // Allow jumping again
-    }
 
       // Apply rotation to the car
-      car.rotation.y += steeringAngle;
+      car.rotation.y += turnAngle;
+
+      // Reset turn angle
+      turnAngle = 0;
 
       // Rotate wheels for forward/backward movement
       wheels.forEach((wheel) => {
@@ -267,22 +239,41 @@ function update() {
 
       // Steer wheels for turning (front wheels only)
       wheels.forEach((wheel) => {
-        if (wheel.name.includes('front')) { // Check your model naming
-          wheel.rotation.y = steeringAngle; // Apply steering angle to front wheels
-        }
+          if (wheel.name.includes('front')) { // Check your model naming
+              if (keys.a) {
+                  wheel.rotation.y = 0.1; // Turn left (consistent value)
+              } else if (keys.d) {
+                  wheel.rotation.y = -0.1; // Turn right (consistent value)
+              } else {
+                  wheel.rotation.y = 0; // Reset steering
+              }
+          }
       });
 
-      // Camera Follow (unchanged)
-      const targetCameraPosition = car.position.clone().add(
-          cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
-      );
-      camera.position.lerp(targetCameraPosition, cameraLag);
-      camera.lookAt(car.position);
+      // Camera behavior based on the car's position
+      if (
+          car.position.x > topDownBoundary.x1 &&
+          car.position.x < topDownBoundary.x2 &&
+          car.position.z > topDownBoundary.z1 &&
+          car.position.z < topDownBoundary.z2
+      ) {
+          // Top-down view
+          camera.position.set(car.position.x, 50, car.position.z); // Move camera above the car
+          camera.lookAt(car.position); // Look straight down
+      } else {
+          // Default follow behavior
+          const targetCameraPosition = car.position.clone().add(
+              cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), car.rotation.y)
+          );
+          camera.position.lerp(targetCameraPosition, cameraLag);
+          camera.lookAt(car.position);
+      }
 
       // Update Speedometer
       updateSpeedometer(Math.abs(carSpeed)); // Use absolute value for speedometer
   }
 }
+
 
 // Update keyboard event listeners to reset steering angle when keys are released
 window.addEventListener('keyup', (e) => {
