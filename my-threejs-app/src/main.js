@@ -256,7 +256,7 @@ const carSwitchDisplays = [
   { x: 37, y: 0, z: 87.3, name: "rav42"  },
   { x: 41.7, y: 0, z: 87.3, name: "highlander2" },
   { x: 50, y: 0, z: 87.3, name: "tacoma2" },
-  { x: 66.2, y: 0, z: 87.3, name: "bz4x2" },
+  { x: 66.2, y: 0, z: 87.3, name: "bz4x" },
   { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
   { x: 27.56, y: 0, z: 110, name: "supra2"},
   { x: 43.76, y: 0, z: 110, name: "4runner2"},
@@ -272,7 +272,7 @@ const carSwitchCollisions = [
   { x: 36.9, y: 0, z: 87.4, name: "rav42" },
   { x: 41.6, y: 0, z: 87.4, name: "highlander2" },
   { x: 49.9, y: 0, z: 87.4, name: "tacoma2" },
-  { x: 66.1, y: 0, z: 87.4, name: "bz4x2" },
+  { x: 66.1, y: 0, z: 87.4, name: "bz4x" },
   { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
   { x: 27.56, y: 0, z: 110, name: "supra2"},
   { x: 43.76, y: 0, z: 110, name: "4runner2"},
