@@ -118,8 +118,8 @@ let turnAngle = 0;
 
 // Speed Variables
 let carSpeed = 0; // Speed in mph
-const maxSpeed = 15; // Maximum speed for the speedometer
-const acceleration = 0.05; // Rate of acceleration
+const maxSpeed = 20; // Maximum speed for the speedometer
+const acceleration = 0.02; // Rate of acceleration
 const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
@@ -151,8 +151,14 @@ function update() {
 
       // Gradually adjust carSpeed towards targetSpeed
       if (carSpeed < targetSpeed) {
+        if (keys.s){
+          carSpeed += acceleration * 2.5; // Accelerate
+          carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
+        else {
           carSpeed += acceleration; // Accelerate
           carSpeed = Math.min(carSpeed, targetSpeed); // Clamp to targetSpeed
+        }
       } else if (carSpeed > targetSpeed) {
           carSpeed -= deceleration; // Decelerate
           carSpeed = Math.max(carSpeed, targetSpeed); // Clamp to targetSpeed
