@@ -73,7 +73,7 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Adjust the path to the GLB file
-loader.load('/bluecar.glb', (gltf) => {
+loader.load('/mirai.glb', (gltf) => {
     car = gltf.scene;
     scene.add(car);
 
@@ -168,7 +168,7 @@ function update() {
           if (keys.a) turnAngle += turnSpeed;
           if (keys.d) turnAngle -= turnSpeed;
         }
-        else if (keys.s) {
+        else if (keys.s && carSpeed >= 0) {
           if (keys.a) turnAngle -= turnSpeed;
           if (keys.d) turnAngle += turnSpeed;
         }
@@ -195,9 +195,9 @@ function update() {
       wheels.forEach((wheel) => {
         if (wheel.name.includes('front')) { // Check your model naming
           if (keys.a) {
-            wheel.rotation.y = Math.PI / 8; // Turn left (consistent value)
+            wheel.rotation.y = 0.1; // Turn left (consistent value)
           } else if (keys.d) {
-            wheel.rotation.y = -Math.PI / 8; // Turn right (consistent value)
+            wheel.rotation.y = -0.1; // Turn right (consistent value)
           } else {
             wheel.rotation.y = 0; // Reset steering
           }
