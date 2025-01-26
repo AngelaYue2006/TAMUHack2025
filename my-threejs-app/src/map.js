@@ -11,6 +11,14 @@ export function loadParkingLots(scene) {
       const lotModel = gltf.scene;
       lotModel.scale.set(4,4, 4);  // Scale the lot if needed
 
+      // Enable shadows for the parking lot model and its children
+      lotModel.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;  // Allow the parking lot to cast shadows
+          child.receiveShadow = true;  // Allow the parking lot to receive shadows
+        }
+      });
+
       // Place parking lot
       const positions = [
         { x: 1, y: 0, z: 1 }

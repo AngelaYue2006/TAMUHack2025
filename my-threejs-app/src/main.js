@@ -49,22 +49,6 @@ const skyMaterial = new THREE.MeshBasicMaterial({
 const skybox = new THREE.Mesh(skyGeometry, skyMaterial);
 scene.add(skybox);
 
-// Add a Road with Low-Poly Style
-const roadGeometry = new THREE.PlaneGeometry(roadSize, roadSize); // Larger plane
-const roadTexture = new THREE.TextureLoader().load('road-texture.jpg'); // Replace with your texture
-roadTexture.wrapS = THREE.RepeatWrapping;
-roadTexture.wrapT = THREE.RepeatWrapping;
-roadTexture.repeat.set(roadSize / 10, roadSize / 10); // Adjust texture tiling to match the new size
-const roadMaterial = new THREE.MeshPhongMaterial({
-  map: roadTexture,
-  side: THREE.DoubleSide,
-});
-const road = new THREE.Mesh(roadGeometry, roadMaterial);
-road.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal
-road.position.y = -0.5; // Slightly below the car
-road.receiveShadow = true; // Enable shadow receiving
-scene.add(road);
-
 // Load parking lots and trees
 loadParkingLots(scene);
 
@@ -119,6 +103,8 @@ function resetCar() {
         dropIn(); // Trigger drop-in effect
     }
 }
+
+let activeCarName = null; // Track the name of the active collision box
 
 // Adjust the path to the GLB file
 loader.load('/mirai2.glb', (gltf) => {
@@ -225,31 +211,243 @@ function updateCoordinates() {
   }
 }
 
-// Function to update compass needle rotation
-function updateCompass(angle) {
-  const compassNeedle = document.getElementById('compass-needle');
-  if (compassNeedle) {
-    compassNeedle.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-  }
+// Create a bounding box for the car
+const carBoundingBox = new THREE.Box3();
+// Create an array to store bounding boxes for barriers/fences
+const barrierBoundingBoxes = [];
+
+// Function to update the car's bounding box
+function updateCarBoundingBox() {
+    if (car) {
+        carBoundingBox.setFromObject(car);
+    }
 }
-// Function to toggle compass visibility
-function toggleCompass() {
-  const compass = document.getElementById('compass');
-  const compassNeedle = document.getElementById('compass-needle');
 
-  // Get the computed display value of the compass
-  const compassDisplay = window.getComputedStyle(compass).display;
+// Physical collision barrier
+// IF HAVE TIME *******
+// const barrier = new THREE.Mesh(
+//   new THREE.BoxGeometry(20, 20, 20),
+//   new THREE.MeshStandardMaterial({ color: 0xff0000 })
+// );
+// barrier.name = 'barrier'; // Assign a name
+// barrier.position.set(20, 5, 60);
+// scene.add(barrier);
 
-  if (compassDisplay === 'none') {
-    // Show the compass and needle
-    compass.style.display = 'block';
-    compassNeedle.style.display = 'block';
+// Example: Add bounding boxes for barriers/fences
+scene.traverse((object) => {
+  if (object.isMesh && (object.name.includes('barrier'))) {
+    const boundingBox = new THREE.Box3().setFromObject(object);
+    barrierBoundingBoxes.push(boundingBox);
+  }
+});
+
+function handleCollision(barrierBox) {
+  carSpeed = 0;
+}
+
+// CAR BOUNDING BOX DEBUG *******
+// const carBoxHelper = new THREE.Box3Helper(carBoundingBox, 0xff0000);
+// scene.add(carBoxHelper);
+
+// Car Switch Box Display
+const carSwitchDisplays = [
+  { x: 23.1, y: 0, z: 87.3, name: "corrolla2" }, //left 1
+  { x: 30.1, y: 0, z: 87.3, name: "prius2" },
+  { x: 37, y: 0, z: 87.3, name: "rav42"  },
+  { x: 41.7, y: 0, z: 87.3, name: "highlander2" },
+  { x: 50, y: 0, z: 87.3, name: "tacoma2" },
+  { x: 66.2, y: 0, z: 87.3, name: "bz4x2" },
+  { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
+  { x: 27.56, y: 0, z: 110, name: "supra2"},
+  { x: 43.76, y: 0, z: 110, name: "4runner2"},
+  { x: 49.8, y: 0, z: 110, name: "sienna2"},
+  { x: 54.4, y: 0, z: 110, name: "tundra2"},
+  { x: 68.4, y: 0, z: 110, name: "mirai2"}
+  // Add more coordinates as needed
+];
+
+const carSwitchCollisions = [
+  { x: 23, y: 0, z: 87.4, name: "corrolla2" }, // left 1
+  { x: 30, y: 0, z: 87.4, name: "prius2" },
+  { x: 36.9, y: 0, z: 87.4, name: "rav42" },
+  { x: 41.6, y: 0, z: 87.4, name: "highlander2" },
+  { x: 49.9, y: 0, z: 87.4, name: "tacoma2" },
+  { x: 66.1, y: 0, z: 87.4, name: "bz4x2" },
+  { x: 23, y: 0, z: 110, name: "camry2"}, // right 1
+  { x: 27.56, y: 0, z: 110, name: "supra2"},
+  { x: 43.76, y: 0, z: 110, name: "4runner2"},
+  { x: 49.8, y: 0, z: 110, name: "sienna2"},
+  { x: 54.4, y: 0, z: 110, name: "tundra2"},
+  { x: 68.4, y: 0, z: 110, name: "mirai2"}
+  // Add more coordinates and names as needed
+];
+
+const collisionBoxes = []; // Array to store collision boxes
+
+// Material for the outlines
+const outlineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+// Loop through carSwitchDisplays and create display boxes
+const displayBoxes = carSwitchDisplays.map((position) => {
+  const boxGeometry = new THREE.BoxGeometry(2.5, 0.5, 4.5);
+  const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+  const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
+  detector.name = `Car Switch Display - ${position.name}`;
+  detector.position.set(position.x, position.y, position.z);
+  detector.visible = false; // Initially hide the display box
+  scene.add(detector);
+  return detector;
+});
+
+// Loop through carSwitchCollisions and create collision boxes
+carSwitchCollisions.forEach((position, index) => {
+  const boxGeometry = new THREE.BoxGeometry(4, 2, 16);
+  const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+  const detector = new THREE.LineSegments(edgesGeometry, outlineMaterial);
+  detector.name = `Car Switch Collision - ${position.name}`;
+  detector.position.set(position.x, position.y, position.z);
+
+  // Link the collision box to its respective display box
+  collisionBoxes.push({
+    collisionBox: detector,
+    displayBox: displayBoxes[index], // Use the same index to link them
+  });
+});
+
+const boxGeometry1 = new THREE.BoxGeometry(4, 2, 8);
+const edgesGeometry1 = new THREE.EdgesGeometry(boxGeometry1);
+const detector1 = new THREE.LineSegments(edgesGeometry1, outlineMaterial);
+
+// Get the HTML element
+const infoMessage = document.getElementById('info-message');
+// Variable to track if the car is colliding with the detector
+let isCollidingWithDetector = false;
+
+function checkCollisions() {
+    updateCarBoundingBox(); // Update the car's bounding box
+
+    for (const barrierBox of barrierBoundingBoxes) {
+      if (carBoundingBox.intersectsBox(barrierBox)) {
+          // Handle collision with the specific barrier
+          handleCollision(barrierBox);
+          break; // Exit loop after first collision
+      }
+    }
+
+    // Hide all display boxes initially
+  displayBoxes.forEach((displayBox) => {
+    displayBox.visible = false;
+  });
+
+  // Track if the car is colliding with any collision box
+  let isColliding = false;
+
+  // Loop through all collision boxes
+  for (const { collisionBox, displayBox } of collisionBoxes) {
+    const detectorBox = new THREE.Box3().setFromObject(collisionBox);
+    if (carBoundingBox.intersectsBox(detectorBox)) {
+      isColliding = true;
+      // Show only the first collided display box
+      displayBox.visible = true;
+      activeCarName = collisionBox.name.replace('Car Switch Collision - ', '');
+      // Exit the loop after the first collision is detected
+      break;
+    }
+  }
+
+  // If no collisions are detected, reset the active car name
+  if (!isColliding) {
+    activeCarName = null;
+  }
+
+  // Show/hide the info message based on collision
+  if (isColliding) {
+    infoMessage.style.display = 'block';
+    isCollidingWithDetector = true;
   } else {
-    // Hide the compass and needle
-    compass.style.display = 'none';
-    compassNeedle.style.display = 'none';
+    infoMessage.style.display = 'none';
+    isCollidingWithDetector = false;
   }
 }
+
+function reloadCarModel(modelName) {
+  // Remove the current car from the scene
+  if (car) {
+    scene.remove(car);
+  }
+
+  // Load the new car model
+  loader.load(`/${modelName}.glb`, (gltf) => {
+    car = gltf.scene;
+    scene.add(car);
+
+    // Enable shadows for the car
+    car.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        // Adjust material properties if needed
+        if (child.material) {
+          child.material.metalness = 0.1; // Reduce metalness
+          child.material.roughness = 0.5; // Increase roughness
+          child.material.needsUpdate = true; // Ensure material updates
+        }
+      }
+    });
+
+    // Find wheels in the model (adjust names based on your GLB file)
+    wheels = []; // Reset wheels array
+    car.traverse((child) => {
+      if (child.isMesh && child.name.includes('wheel')) {
+        wheels.push(child);
+      }
+    });
+
+    // Position the car and trigger drop-in effect
+    car.position.copy(initialCarPosition);
+    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
+    car.scale.set(0.25, 0.25, 0.25);
+    carSpeed = 0;
+    dropIn(); // Trigger drop-in effect
+  }, undefined, (error) => {
+    console.error(`Error loading ${modelName} model:`, error);
+  });
+}
+
+// Get the popup and overlay elements
+const carInfoPopup = document.getElementById('car-info-popup');
+const overlay = document.getElementById('overlay');
+const carInfoContent = document.getElementById('car-info-content');
+const closePopupButton = document.getElementById('close-popup');
+
+// Handle keyboard input
+window.addEventListener('keydown', (e) => {
+  if (isCollidingWithDetector) {
+    if (e.key === 'i') {
+      // Set the car information content
+      carInfoContent.textContent = `This is the information for the car.`; // Replace with dynamic content if needed
+      // Show the popup and overlay
+      carInfoPopup.style.display = 'block';
+      overlay.style.display = 'block';
+    } else if (e.key === 'u' && activeCarName) {
+      // Reload the car model
+      reloadCarModel(activeCarName);
+    }
+  }
+});
+
+// Close the popup when the X button is clicked
+closePopupButton.addEventListener('click', () => {
+  carInfoPopup.style.display = 'none';
+  overlay.style.display = 'none';
+});
+
+// Close the popup when clicking outside of it
+overlay.addEventListener('click', () => {
+  carInfoPopup.style.display = 'none';
+  overlay.style.display = 'none';
+});
 
 // Update function
 function update() {
