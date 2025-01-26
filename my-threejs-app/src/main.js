@@ -149,8 +149,8 @@ function getElapsedTime() {
 // Update Speedometer
 
 let steeringAngle = 0; // Current steering angle
-const maxSteeringAngle = 0.05; // Maximum steering angle in radians
-const steeringIncrement = 0.0001; // Rate at which steering angle increases
+let maxSteeringAngle = 0.04; // Maximum steering angle in radians
+let steeringIncrement = 0.0005; // Rate at which steering angle increases
 
 let canJump = true; // Allow jump when grounded
 let jumpVelocity = 0; // Initial vertical speed
@@ -181,6 +181,15 @@ if (car) {
 function update() {
   if (car) {
       // Determine target speed based on user input
+      if (carSpeed > 25) {
+        maxSteeringAngle = 0.02;
+        steeringIncrement = 0.0000001;
+      }
+      else if (carSpeed <= 25){
+        maxSteeringAngle = 0.04;
+        steeringIncrement = 0.0005;
+      }
+
       if (keys.w) {
           targetSpeed = -maxSpeed; // Accelerate forward
       } else if (keys.s) {
@@ -210,6 +219,9 @@ function update() {
       car.position.add(forwardDirection.multiplyScalar(carSpeed * 0.01)); // Adjust multiplier for realistic movement
 
       // Update steering angle based on key input
+      if (!keys.a && !keys.d && Math.abs(steeringAngle < 0.005)){
+        steeringAngle = 0;
+      }
       if (carSpeed != 0){
       if (keys.a && !keys.d) {
           steeringAngle += steeringIncrement;
@@ -217,9 +229,12 @@ function update() {
       } else if (keys.d && !keys.a) {
           steeringAngle -= steeringIncrement;
           steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
-      } else {
-          steeringAngle = 0; // Reset steering angle if both keys are pressed or none are pressed
+      } else if (!keys.a && !keys.d && steeringAngle > 0){
+          steeringAngle -= steeringIncrement * 2; // Reset steering angle if both keys are pressed or none are pressed
       }
+        else if (!keys.a && !keys.d && steeringAngle < 0){
+          steeringAngle += steeringIncrement * 2;
+        }
     }
 
 
@@ -274,12 +289,12 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
     if (e.key === 'a' || e.key === 'ArrowLeft') {
         keys.a = false;
-        steeringAngle = 0; // Reset steering angle when 'a' is released
+        //steeringAngle = 0; // Reset steering angle when 'a' is released
     }
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
     if (e.key === 'd' || e.key === 'ArrowRight') {
         keys.d = false;
-        steeringAngle = 0; // Reset steering angle when 'd' is released
+        //steeringAngle = 0; // Reset steering angle when 'd' is released
     }
 });
 
