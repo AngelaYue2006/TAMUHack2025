@@ -179,6 +179,9 @@ let isCoordinateDisplayVisible = false;
 // Reference the coordinate display div
 const coordinateDisplay = document.getElementById('coordinate-display');
 
+// Initialize compass angle
+let compassAngle = 0;
+
 // Keyboard Input
 const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false, r: false };
 window.addEventListener('keydown', (e) => {
@@ -191,7 +194,10 @@ window.addEventListener('keydown', (e) => {
     if (e.key === '1') { //Checking to toggle the coordinates
       isCoordinateDisplayVisible = !isCoordinateDisplayVisible;
       coordinateDisplay.style.display = isCoordinateDisplayVisible ? 'block' : 'none';
-  }
+    }
+    if (e.key === '2') {
+      toggleCompass();
+    }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -216,6 +222,32 @@ function updateCoordinates() {
   if (isCoordinateDisplayVisible && car) {
       const { x, z } = car.position;
       coordinateDisplay.textContent = `X: ${z.toFixed(2)}, Y: ${x.toFixed(2)}`;
+  }
+}
+
+// Function to update compass needle rotation
+function updateCompass(angle) {
+  const compassNeedle = document.getElementById('compass-needle');
+  if (compassNeedle) {
+    compassNeedle.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+  }
+}
+// Function to toggle compass visibility
+function toggleCompass() {
+  const compass = document.getElementById('compass');
+  const compassNeedle = document.getElementById('compass-needle');
+
+  // Get the computed display value of the compass
+  const compassDisplay = window.getComputedStyle(compass).display;
+
+  if (compassDisplay === 'none') {
+    // Show the compass and needle
+    compass.style.display = 'block';
+    compassNeedle.style.display = 'block';
+  } else {
+    // Hide the compass and needle
+    compass.style.display = 'none';
+    compassNeedle.style.display = 'none';
   }
 }
 
@@ -276,7 +308,26 @@ function update() {
           if (keys.a) turnAngle += turnSpeed;
           if (keys.d) turnAngle -= turnSpeed;
         }
+
+        
+        // Calculate compass angle (convert radians to degrees)
+        let compassAngle = THREE.MathUtils.radToDeg(car.rotation.y);
+
+        // Adjust for the car's initial rotation (90 degrees offset)
+        compassAngle -= 90; // Subtract 90 degrees to align the compass
+
+        // Invert the angle to fix East/West being backwards
+        compassAngle *= -1;
+
+        // Normalize the angle to a range of 0–360 degrees
+        compassAngle = (compassAngle + 360) % 360;
+
+        // Update the compass needle
+        updateCompass(compassAngle);
+
+
       }
+
 
       // Handle jump when Space is pressed
       if (keys.Space && canJump) {
