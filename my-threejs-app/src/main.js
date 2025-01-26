@@ -148,6 +148,7 @@ function getElapsedTime() {
 
 // Update Speedometer
 
+const steeringDrag = 0.000009;
 let steeringAngle = 0; // Current steering angle
 let maxSteeringAngle = 0.04; // Maximum steering angle in radians
 let steeringIncrement = 0.0005; // Rate at which steering angle increases
@@ -182,11 +183,11 @@ function update() {
   if (car) {
       // Determine target speed based on user input
       if (carSpeed > 25) {
-        maxSteeringAngle = 0.02;
-        steeringIncrement = 0.0000001;
+        maxSteeringAngle = 0.01;
+        steeringIncrement = 0.0008;
       }
       else if (carSpeed <= 25){
-        maxSteeringAngle = 0.04;
+        maxSteeringAngle = 0.02;
         steeringIncrement = 0.0005;
       }
 
@@ -224,16 +225,16 @@ function update() {
       }
       if (carSpeed != 0){
       if (keys.a && !keys.d) {
-          steeringAngle += steeringIncrement;
+          steeringAngle += steeringIncrement - carSpeed * steeringDrag;
           steeringAngle = Math.min(steeringAngle, maxSteeringAngle); // Clamp to maxSteeringAngle
       } else if (keys.d && !keys.a) {
-          steeringAngle -= steeringIncrement;
+          steeringAngle -= (steeringIncrement - carSpeed * steeringDrag);
           steeringAngle = Math.max(steeringAngle, -maxSteeringAngle); // Clamp to -maxSteeringAngle
       } else if (!keys.a && !keys.d && steeringAngle > 0){
-          steeringAngle -= steeringIncrement * 2; // Reset steering angle if both keys are pressed or none are pressed
+          steeringAngle -= steeringIncrement * 3; // Reset steering angle if both keys are pressed or none are pressed
       }
         else if (!keys.a && !keys.d && steeringAngle < 0){
-          steeringAngle += steeringIncrement * 2;
+          steeringAngle += steeringIncrement * 3;
         }
     }
 
