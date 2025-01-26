@@ -219,6 +219,64 @@ function updateCoordinates() {
   }
 }
 
+// Create a bounding box for the car
+const carBoundingBox = new THREE.Box3();
+// Create an array to store bounding boxes for barriers/fences
+const barrierBoundingBoxes = [];
+
+// Function to update the car's bounding box
+function updateCarBoundingBox() {
+    if (car) {
+        carBoundingBox.setFromObject(car);
+    }
+}
+
+const barrier = new THREE.Mesh(
+  new THREE.BoxGeometry(20, 20, 20),
+  new THREE.MeshStandardMaterial({ color: 0xff0000 })
+);
+barrier.name = 'BARRIER'; // Assign a name
+barrier.position.set(20, 5, 60);
+scene.add(barrier);
+
+// Function to add bounding boxes for barriers/fences
+function addBarrierBoundingBox(object) {
+    const boundingBox = new THREE.Box3().setFromObject(object);
+    barrierBoundingBoxes.push(boundingBox);
+}
+
+// Example: Add bounding boxes for barriers/fences
+scene.traverse((object) => {
+  if (object.isMesh && (object.name.includes('BARRIER') || object.name.includes('CUBE'))) {
+      addBarrierBoundingBox(object);
+  }
+});
+
+function checkCollisions() {
+  updateCarBoundingBox(); // Update the car's bounding box
+
+  for (const barrierBox of barrierBoundingBoxes) {
+      if (carBoundingBox.intersectsBox(barrierBox)) {
+          // Handle collision with the specific barrier
+          handleCollision(barrierBox);
+          break; // Exit loop after first collision
+      }
+  }
+}
+
+function handleCollision(barrierBox) {
+  carSpeed = 0;
+  
+}
+
+const carBoxHelper = new THREE.Box3Helper(carBoundingBox, 0xff0000);
+scene.add(carBoxHelper);
+
+barrierBoundingBoxes.forEach((box) => {
+    const boxHelper = new THREE.Box3Helper(box, 0x00ff00);
+    scene.add(boxHelper);
+});
+
 // Update function
 function update() {
   if (car) {
@@ -312,6 +370,9 @@ function update() {
               }
           }
       });
+
+      // Check for collisions
+      checkCollisions();
 
       if (
         car.position.x > topDownBoundary.x1 &&
