@@ -80,7 +80,7 @@ let isDropping = true; // Whether the car is currently dropping
 const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 85);
 
 // Gravity and jump variables
-const gravity = 0.0002; // Gravity pull
+const gravity = 0.005; // Gravity pull
 let jumpVelocity = 0; // Initial vertical speed
 let canJump = true; // Allow jump when grounded
 
@@ -100,8 +100,8 @@ function applyGravity() {
         jumpVelocity -= gravity; // Decrease vertical speed (simulate gravity)
 
         // Reset when car lands
-        if (car.position.y <= 0.5) { // Ground level
-            car.position.y = 0.5; // Snap to ground
+        if (car.position.y <= 1) { // Ground level
+            car.position.y = 1; // Snap to ground
             jumpVelocity = 0; // Stop vertical movement
             canJump = true; // Allow jumping again
             isDropping = false; // Stop dropping
