@@ -6,7 +6,7 @@ export function loadParkingLots(scene) {
   const lotLoader = new GLTFLoader();
 
   lotLoader.load(
-    '/examplelot.glb',  // Update path as needed
+    '/parking_lot2.glb',  // Update path as needed
     (gltf) => {
       const lotModel = gltf.scene;
       lotModel.scale.set(4,4, 4);  // Scale the lot if needed

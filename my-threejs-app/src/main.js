@@ -73,7 +73,7 @@ const loader = new GLTFLoader();
 let car, wheels = [];
 
 // Adjust the path to the GLB file
-loader.load('/mirai.glb', (gltf) => {
+loader.load('/tacoma2.glb', (gltf) => {
     car = gltf.scene;
     scene.add(car);
 
