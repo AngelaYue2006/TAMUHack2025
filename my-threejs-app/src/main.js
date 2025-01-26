@@ -124,19 +124,20 @@ const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
 // Keyboard Input
-const keys = { w: false, a: false, s: false, d: false };
+const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false };
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'w') keys.w = true;
-    if (e.key === 'a') keys.a = true;
-    if (e.key === 's') keys.s = true;
-    if (e.key === 'd') keys.d = true;
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
+    if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
+    if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
 });
 window.addEventListener('keyup', (e) => {
-    if (e.key === 'w') keys.w = false;
-    if (e.key === 'a') keys.a = false;
-    if (e.key === 's') keys.s = false;
-    if (e.key === 'd') keys.d = false;
+    if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
+    if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = false;
+    if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
+    if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
 });
+
 
 function update() {
   if (car) {
