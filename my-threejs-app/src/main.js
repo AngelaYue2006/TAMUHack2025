@@ -77,7 +77,7 @@ const initialDropHeight = 3; // Height from which the car drops
 let isDropping = true; // Whether the car is currently dropping
 
 // Initial spawn position
-const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 85);
+const initialCarPosition = new THREE.Vector3(20, initialDropHeight, 98.5);
 
 // Gravity and jump variables
 const gravity = 0.005; // Gravity pull
@@ -113,7 +113,7 @@ function applyGravity() {
 function resetCar() {
     if (car) {
         car.position.copy(initialCarPosition); // Reset position
-        car.rotation.y = 0; // Reset rotation
+        car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
         carSpeed = 0; // Reset speed
         targetSpeed = 0; // Reset target speed
         dropIn(); // Trigger drop-in effect
@@ -149,6 +149,7 @@ loader.load('/mirai2.glb', (gltf) => {
 
     // Position the car and trigger drop-in effect
     car.position.copy(initialCarPosition);
+    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees (in radians)
     car.scale.set(0.3, 0.3, 0.3);
     dropIn(); // Trigger drop-in effect
 }, undefined, (error) => {
