@@ -173,6 +173,12 @@ const acceleration = 0.02; // Rate of acceleration
 const deceleration = 0.03; // Rate of deceleration
 let targetSpeed = 0; // Desired speed based on user input
 
+//Creating variable for the coordinate tracker
+// Toggle variable for coordinate display
+let isCoordinateDisplayVisible = false;
+// Reference the coordinate display div
+const coordinateDisplay = document.getElementById('coordinate-display');
+
 // Keyboard Input
 const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false, Space: false, r: false };
 window.addEventListener('keydown', (e) => {
@@ -182,7 +188,12 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
     if (e.key === ' ') keys.Space = true;
     if (e.key === 'r' || e.key === 'R') keys.r = true; // Add "R" key
+    if (e.key === '1') { //Checking to toggle the coordinates
+      isCoordinateDisplayVisible = !isCoordinateDisplayVisible;
+      coordinateDisplay.style.display = isCoordinateDisplayVisible ? 'block' : 'none';
+  }
 });
+
 window.addEventListener('keyup', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
     if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = false;
@@ -199,6 +210,14 @@ const topDownBoundary = {
   x2: 90,  // Right boundary
   z2: 115,  // Back boundary
 };
+
+// Update function to display coordinates
+function updateCoordinates() {
+  if (isCoordinateDisplayVisible && car) {
+      const { x, z } = car.position;
+      coordinateDisplay.textContent = `X: ${z.toFixed(2)}, Y: ${x.toFixed(2)}`;
+  }
+}
 
 // Update function
 function update() {
@@ -321,6 +340,9 @@ function update() {
 
       // Update Speedometer
       updateSpeedometer(Math.abs(carSpeed)); // Use absolute value for speedometer
+
+      //Update Coordinates
+      updateCoordinates()
   }
 }
 

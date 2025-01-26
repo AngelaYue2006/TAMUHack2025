@@ -24,6 +24,8 @@
       font-weight: 700;
     }
 
+    
+
     #welcome-screen {
       position: fixed;
       top: 0;
@@ -154,6 +156,27 @@
     <p>Test drive your dream cars in this interactive shopping map!</p> <!-- New text -->
     <button id="start-button">Start Driving</button>
   </div>
+
+  <div id="coordinate-display">
+    X: 0, Y: 0
+  </div>
+  
+  
+  <style>
+    #coordinate-display {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      border-radius: 5px;
+      display: none; /* Hidden initially */
+      z-index: 1000;
+    }
+  </style>
 
   <div id="map-container">
     <!-- 3D map will be rendered here -->
